@@ -6,12 +6,28 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "bootstrap:admin": "node --env-file=.env.local scripts/bootstrap-superadmin.mjs"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.9.1",
+    "axios": "^1.20.0",
+    "firebase": "^12.18.0",
+    "firebase-admin": "^14.3.0",
+    "framer-motion": "^13.2.0",
+    "i18next": "^26.4.2",
     "next": "16.3.4",
+    "next-themes": "^0.4.6",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "react-hook-form": "^7.87.0",
+    "react-i18next": "^17.0.13",
+    "react-icons": "^5.7.0",
+    "sonner": "^2.0.8",
+    "sweetalert2": "^11.26.25",
+    "swiper": "^14.2.0",
+    "swr": "^2.5.1",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
