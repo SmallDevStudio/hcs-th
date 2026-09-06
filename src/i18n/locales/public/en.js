@@ -1,3 +1,5 @@
+import publicProductsEn from "@/i18n/locales/public/products/en";
+
 const publicEn = {
   common: {
     contactUs: "Contact Us",
@@ -29,6 +31,8 @@ const publicEn = {
     dark: "Dark",
     system: "System",
   },
+
+  products: publicProductsEn,
 
   home: {
     hero: {

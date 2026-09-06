@@ -1,6 +1,9 @@
 import publicEn from "@/i18n/locales/public/en";
 import publicTh from "@/i18n/locales/public/th";
 
+import publicProductsEn from "@/i18n/locales/public/products/en";
+import publicProductsTh from "@/i18n/locales/public/products/th";
+
 import adminEn from "@/i18n/locales/admin/en";
 import adminTh from "@/i18n/locales/admin/th";
 
@@ -30,7 +33,11 @@ import trashTh from "@/i18n/locales/admin/trash/th";
 
 export const i18nResources = {
   en: {
-    public: publicEn,
+    public: {
+      ...publicEn,
+
+      products: publicProductsEn,
+    },
 
     admin: {
       ...adminEn,
@@ -54,7 +61,11 @@ export const i18nResources = {
   },
 
   th: {
-    public: publicTh,
+    public: {
+      ...publicTh,
+
+      products: publicProductsTh,
+    },
 
     admin: {
       ...adminTh,

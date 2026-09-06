@@ -1,3 +1,5 @@
+import publicProductsTh from "@/i18n/locales/public/products/th";
+
 const publicTh = {
   common: {
     contactUs: "ติดต่อเรา",
@@ -29,6 +31,8 @@ const publicTh = {
     dark: "โหมดมืด",
     system: "ตามระบบ",
   },
+
+  products: publicProductsTh,
 
   home: {
     hero: {

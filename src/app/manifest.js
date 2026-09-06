@@ -1,0 +1,46 @@
+export default function manifest() {
+  return {
+    name: "HCS Thailand",
+
+    short_name: "HCS",
+
+    description:
+      "Architectural hardware, security products, fire doors and total opening solutions.",
+
+    start_url: "/en",
+
+    scope: "/",
+
+    display: "standalone",
+
+    orientation: "portrait-primary",
+
+    background_color: "#ffffff",
+
+    theme_color: "#0979c4",
+
+    categories: ["business", "productivity", "utilities"],
+
+    lang: "en",
+
+    dir: "ltr",
+
+    icons: [
+      {
+        src: "/favicon-16x16.png",
+        sizes: "16x16",
+        type: "image/png",
+      },
+      {
+        src: "/favicon-32x32.png",
+        sizes: "32x32",
+        type: "image/png",
+      },
+      {
+        src: "/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  };
+}
