@@ -19,21 +19,40 @@ export const PRODUCT_LIMITS = Object.freeze({
   MODEL_MAX_LENGTH: 100,
   SKU_MAX_LENGTH: 100,
 
+  PRODUCT_TYPE_MAX_LENGTH: 120,
+
+  PRODUCT_TYPE_SLUG_MIN_LENGTH: 2,
+  PRODUCT_TYPE_SLUG_MAX_LENGTH: 140,
+
+  SERIES_MAX_LENGTH: 160,
+
   SHORT_DESCRIPTION_MAX_LENGTH: 300,
 
   DESCRIPTION_MAX_LENGTH: 20000,
 
-  FEATURE_MAX_LENGTH: 300,
-  FEATURES_MAX_ITEMS: 20,
+  FEATURE_MAX_LENGTH: 500,
+  FEATURES_MAX_ITEMS: 30,
 
-  SPECIFICATION_LABEL_MAX_LENGTH: 120,
+  VARIATION_MAX_LENGTH: 500,
+  VARIATIONS_MAX_ITEMS: 30,
 
-  SPECIFICATION_VALUE_MAX_LENGTH: 500,
+  SPECIFICATION_LABEL_MAX_LENGTH: 160,
 
-  SPECIFICATIONS_MAX_ITEMS: 50,
+  SPECIFICATION_VALUE_MAX_LENGTH: 1000,
 
-  STANDARD_MAX_LENGTH: 100,
-  STANDARDS_MAX_ITEMS: 30,
+  SPECIFICATIONS_MAX_ITEMS: 80,
+
+  FINISH_CODE_MAX_LENGTH: 30,
+  FINISH_NAME_MAX_LENGTH: 120,
+  FINISHES_MAX_ITEMS: 40,
+
+  STANDARD_NAME_MAX_LENGTH: 100,
+
+  STANDARD_CLASSIFICATION_MAX_LENGTH: 200,
+
+  CONFORMITY_REFERENCE_MAX_LENGTH: 160,
+
+  STANDARDS_MAX_ITEMS: 40,
 
   GALLERY_MAX_ITEMS: 12,
   DOCUMENTS_MAX_ITEMS: 12,
@@ -53,6 +72,13 @@ export const PRODUCT_LIMITS = Object.freeze({
 });
 
 export const PRODUCT_DEFAULTS = Object.freeze({
+  model: "",
+  sku: "",
+
+  productTypeSlug: "",
+
+  fireRated: false,
+
   status: PRODUCT_STATUSES.DRAFT,
 
   featured: false,
@@ -64,6 +90,10 @@ export const PRODUCT_DEFAULTS = Object.freeze({
 
   galleryMediaIds: [],
   documentMediaIds: [],
+
+  specifications: [],
+  finishes: [],
+  standards: [],
 });
 
 export function normalizeProductSlug(value) {
@@ -79,4 +109,16 @@ export function normalizeProductSlug(value) {
 
 export function isValidProductSlug(value) {
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(value || ""));
+}
+
+export function normalizeProductTypeSlug(value) {
+  return normalizeProductSlug(value);
+}
+
+export function isValidProductTypeSlug(value) {
+  if (!value) {
+    return true;
+  }
+
+  return isValidProductSlug(value);
 }

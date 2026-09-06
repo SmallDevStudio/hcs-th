@@ -19,6 +19,9 @@ import dashboardTh from "@/i18n/locales/admin/dashboard/th";
 import mediaEn from "@/i18n/locales/admin/media/en";
 import mediaTh from "@/i18n/locales/admin/media/th";
 
+import productsEn from "@/i18n/locales/admin/products/en";
+import productsTh from "@/i18n/locales/admin/products/th";
+
 import siteSettingsEn from "@/i18n/locales/admin/site-settings/en";
 import siteSettingsTh from "@/i18n/locales/admin/site-settings/th";
 
@@ -31,12 +34,21 @@ export const i18nResources = {
 
     admin: {
       ...adminEn,
+
       core: adminCoreEn,
+
       auditLogs: auditLogsEn,
+
       categories: categoriesEn,
+
       dashboard: dashboardEn,
+
       media: mediaEn,
+
+      products: productsEn,
+
       siteSettings: siteSettingsEn,
+
       trash: trashEn,
     },
   },
@@ -46,12 +58,21 @@ export const i18nResources = {
 
     admin: {
       ...adminTh,
+
       core: adminCoreTh,
+
       auditLogs: auditLogsTh,
+
       categories: categoriesTh,
+
       dashboard: dashboardTh,
+
       media: mediaTh,
+
+      products: productsTh,
+
       siteSettings: siteSettingsTh,
+
       trash: trashTh,
     },
   },

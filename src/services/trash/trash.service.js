@@ -2,6 +2,7 @@ import "server-only";
 
 import { FieldPath, FieldValue, Timestamp } from "firebase-admin/firestore";
 
+import { AUDIT_ENTITY_TYPES } from "@/constants/audit";
 import { COLLECTIONS } from "@/constants/collections";
 import { MEDIA_STORAGE_ROOT } from "@/constants/media";
 import {
@@ -17,8 +18,16 @@ import {
 import { adminBucket, adminDb } from "@/lib/firebase/admin";
 import { writeAuditLog } from "@/services/audit/audit.service";
 import { prepareMediaUsageTransition } from "@/services/media/media-usage.service";
+import {
+  prepareProductRelationshipRelease,
+  prepareProductRelationshipRestore,
+} from "@/services/products/product-relationships.service";
 
-const IMAGE_USAGE_ENTITY_TYPES = new Set(["category"]);
+const IMAGE_USAGE_ENTITY_TYPES = new Set([
+  AUDIT_ENTITY_TYPES.CATEGORY || "category",
+]);
+
+const PRODUCT_ENTITY_TYPE = AUDIT_ENTITY_TYPES.PRODUCT || "product";
 
 function serializeFirestoreValue(value) {
   if (value === null || value === undefined) {
@@ -97,7 +106,7 @@ function decodeCursor(cursor) {
 }
 
 function getMediaStoragePath(trashData) {
-  if (trashData.entityType !== "media") {
+  if (trashData.entityType !== AUDIT_ENTITY_TYPES.MEDIA) {
     return null;
   }
 
@@ -127,6 +136,26 @@ function getEntityImageMediaId({ entityType, data }) {
   return data.imageMediaId.trim();
 }
 
+function getProductRelationshipMetadata(data = {}) {
+  if (!data) {
+    return null;
+  }
+
+  return {
+    categoryId: data.categoryId || null,
+
+    primaryImageMediaId: data.primaryImageMediaId || null,
+
+    galleryMediaIds: Array.isArray(data.galleryMediaIds)
+      ? data.galleryMediaIds
+      : [],
+
+    documentMediaIds: Array.isArray(data.documentMediaIds)
+      ? data.documentMediaIds
+      : [],
+  };
+}
+
 async function prepareImageUsageRelease({
   transaction,
   entityType,
@@ -147,12 +176,12 @@ async function prepareImageUsageRelease({
     transaction,
 
     previousMediaId: imageMediaId,
-
     nextMediaId: null,
 
     entityType,
     entityId,
     field: "image",
+
     actor,
   });
 }
@@ -178,12 +207,12 @@ async function prepareImageUsageRestore({
       transaction,
 
       previousMediaId: null,
-
       nextMediaId: imageMediaId,
 
       entityType,
       entityId,
       field: "image",
+
       actor,
     });
   } catch (error) {
@@ -201,6 +230,118 @@ async function prepareImageUsageRestore({
 
     throw error;
   }
+}
+
+async function prepareEntityRelationshipRelease({
+  transaction,
+  entityType,
+  entityId,
+  sourceData,
+  actor,
+}) {
+  if (entityType === PRODUCT_ENTITY_TYPE) {
+    const transition = await prepareProductRelationshipRelease({
+      transaction,
+
+      productId: entityId,
+      productData: sourceData,
+
+      actor,
+    });
+
+    return {
+      type: "product",
+      transition,
+    };
+  }
+
+  const transition = await prepareImageUsageRelease({
+    transaction,
+    entityType,
+    entityId,
+    sourceData,
+    actor,
+  });
+
+  return {
+    type: transition ? "image" : null,
+    transition,
+  };
+}
+
+async function prepareEntityRelationshipRestore({
+  transaction,
+  entityType,
+  entityId,
+  originalData,
+  actor,
+}) {
+  if (entityType === PRODUCT_ENTITY_TYPE) {
+    try {
+      const transition = await prepareProductRelationshipRestore({
+        transaction,
+
+        productId: entityId,
+        productData: originalData,
+
+        actor,
+      });
+
+      return {
+        type: "product",
+        transition,
+      };
+    } catch (error) {
+      if (
+        error instanceof NotFoundError ||
+        error instanceof InvalidRequestError
+      ) {
+        throw new ConflictError(
+          "This product cannot be restored because its category or media is no longer available. Restore the related items first.",
+          {
+            relationships: getProductRelationshipMetadata(originalData),
+          },
+        );
+      }
+
+      throw error;
+    }
+  }
+
+  const transition = await prepareImageUsageRestore({
+    transaction,
+    entityType,
+    entityId,
+    originalData,
+    actor,
+  });
+
+  return {
+    type: transition ? "image" : null,
+    transition,
+  };
+}
+
+function createRestoredData({ entityType, originalData, relationship }) {
+  if (
+    entityType !== PRODUCT_ENTITY_TYPE ||
+    relationship?.type !== "product" ||
+    !relationship.transition
+  ) {
+    return originalData;
+  }
+
+  return {
+    ...originalData,
+
+    category: relationship.transition.category,
+
+    primaryImage: relationship.transition.primaryImage,
+
+    gallery: relationship.transition.gallery,
+
+    documents: relationship.transition.documents,
+  };
 }
 
 async function markPermanentDeletionStarted({ trashReference, actor }) {
@@ -294,7 +435,6 @@ export async function softDeleteEntity({
   await adminDb.runTransaction(async (transaction) => {
     const [sourceSnapshot, trashSnapshot] = await Promise.all([
       transaction.get(sourceReference),
-
       transaction.get(trashReference),
     ]);
 
@@ -312,11 +452,16 @@ export async function softDeleteEntity({
       throw new ConflictError("This document is already deleted");
     }
 
-    const mediaTransition = await prepareImageUsageRelease({
+    /*
+     * อ่าน Category และ Media ทั้งหมดก่อนเริ่ม write
+     */
+    const relationship = await prepareEntityRelationshipRelease({
       transaction,
+
       entityType,
       entityId,
       sourceData,
+
       actor,
     });
 
@@ -350,7 +495,11 @@ export async function softDeleteEntity({
 
       permanentDeletion: null,
 
-      mediaUsageReleased: Boolean(mediaTransition),
+      relationshipsReleased: Boolean(relationship.transition),
+
+      relationshipType: relationship.type || null,
+
+      mediaUsageReleased: Boolean(relationship.transition),
     });
 
     transaction.update(sourceReference, {
@@ -365,7 +514,7 @@ export async function softDeleteEntity({
       updatedBy: actor.uid,
     });
 
-    mediaTransition?.apply();
+    relationship.transition?.apply();
 
     await writeAuditLog({
       actor,
@@ -392,7 +541,14 @@ export async function softDeleteEntity({
           data: sourceData,
         }),
 
-        mediaUsageReleased: Boolean(mediaTransition),
+        productRelationships:
+          entityType === PRODUCT_ENTITY_TYPE
+            ? getProductRelationshipMetadata(sourceData)
+            : null,
+
+        relationshipType: relationship.type || null,
+
+        relationshipsReleased: Boolean(relationship.transition),
       },
 
       transaction,
@@ -511,7 +667,11 @@ export async function restoreTrashItem({
       throw new ConflictError("An active document with this ID already exists");
     }
 
-    const mediaTransition = await prepareImageUsageRestore({
+    /*
+     * Restore Product จะตรวจ Category และ Media
+     * ก่อนเริ่ม transaction writes
+     */
+    const relationship = await prepareEntityRelationshipRestore({
       transaction,
 
       entityType: trashData.entityType,
@@ -523,10 +683,18 @@ export async function restoreTrashItem({
       actor,
     });
 
+    const restoredOriginalData = createRestoredData({
+      entityType: trashData.entityType,
+
+      originalData: trashData.originalData,
+
+      relationship,
+    });
+
     transaction.set(
       sourceReference,
       {
-        ...trashData.originalData,
+        ...restoredOriginalData,
 
         isDeleted: false,
         deletedAt: null,
@@ -545,7 +713,7 @@ export async function restoreTrashItem({
       },
     );
 
-    mediaTransition?.apply();
+    relationship.transition?.apply();
 
     transaction.delete(trashReference);
 
@@ -563,7 +731,7 @@ export async function restoreTrashItem({
       },
 
       after: {
-        ...trashData.originalData,
+        ...restoredOriginalData,
 
         isDeleted: false,
         deletedAt: null,
@@ -572,15 +740,23 @@ export async function restoreTrashItem({
 
       metadata: {
         ...requestMetadata,
+
         trashId,
 
         imageMediaId: getEntityImageMediaId({
           entityType: trashData.entityType,
 
-          data: trashData.originalData,
+          data: restoredOriginalData,
         }),
 
-        mediaUsageRestored: Boolean(mediaTransition),
+        productRelationships:
+          trashData.entityType === PRODUCT_ENTITY_TYPE
+            ? getProductRelationshipMetadata(restoredOriginalData)
+            : null,
+
+        relationshipType: relationship.type || null,
+
+        relationshipsRestored: Boolean(relationship.transition),
       },
 
       transaction,
@@ -662,8 +838,11 @@ export async function permanentlyDeleteTrashItem({
       .collection(sourceCollection)
       .doc(trashData.entityId);
 
+    /*
+     * Category count และ Media usage ถูก release
+     * ตั้งแต่ soft delete แล้ว จึงไม่เปลี่ยนซ้ำที่นี่
+     */
     transaction.delete(sourceReference);
-
     transaction.delete(trashReference);
 
     await writeAuditLog({
@@ -681,7 +860,9 @@ export async function permanentlyDeleteTrashItem({
 
       metadata: {
         ...requestMetadata,
+
         trashId,
+
         permanent: true,
 
         storageDeleted: Boolean(storagePath),
