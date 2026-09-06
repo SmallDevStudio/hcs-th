@@ -2,19 +2,23 @@ import "server-only";
 
 import { FieldPath, FieldValue, Timestamp } from "firebase-admin/firestore";
 
+import { COLLECTIONS } from "@/constants/collections";
+import { MEDIA_STORAGE_ROOT } from "@/constants/media";
 import {
   TRASH_RETENTION_DAYS,
   getTrashCollection,
   isTrashEntityType,
 } from "@/constants/trash";
-import { COLLECTIONS } from "@/constants/collections";
 import {
   ConflictError,
   InvalidRequestError,
   NotFoundError,
 } from "@/lib/api/errors";
-import { adminDb } from "@/lib/firebase/admin";
+import { adminBucket, adminDb } from "@/lib/firebase/admin";
 import { writeAuditLog } from "@/services/audit/audit.service";
+import { prepareMediaUsageTransition } from "@/services/media/media-usage.service";
+
+const IMAGE_USAGE_ENTITY_TYPES = new Set(["category"]);
 
 function serializeFirestoreValue(value) {
   if (value === null || value === undefined) {
@@ -92,6 +96,183 @@ function decodeCursor(cursor) {
   }
 }
 
+function getMediaStoragePath(trashData) {
+  if (trashData.entityType !== "media") {
+    return null;
+  }
+
+  const storagePath = trashData.originalData?.storagePath;
+
+  if (
+    typeof storagePath !== "string" ||
+    !storagePath.startsWith(`${MEDIA_STORAGE_ROOT}/`)
+  ) {
+    throw new InvalidRequestError(
+      "Media trash item has an invalid storage path",
+    );
+  }
+
+  return storagePath;
+}
+
+function getEntityImageMediaId({ entityType, data }) {
+  if (!IMAGE_USAGE_ENTITY_TYPES.has(entityType)) {
+    return null;
+  }
+
+  if (typeof data?.imageMediaId !== "string" || !data.imageMediaId.trim()) {
+    return null;
+  }
+
+  return data.imageMediaId.trim();
+}
+
+async function prepareImageUsageRelease({
+  transaction,
+  entityType,
+  entityId,
+  sourceData,
+  actor,
+}) {
+  const imageMediaId = getEntityImageMediaId({
+    entityType,
+    data: sourceData,
+  });
+
+  if (!imageMediaId) {
+    return null;
+  }
+
+  return prepareMediaUsageTransition({
+    transaction,
+
+    previousMediaId: imageMediaId,
+
+    nextMediaId: null,
+
+    entityType,
+    entityId,
+    field: "image",
+    actor,
+  });
+}
+
+async function prepareImageUsageRestore({
+  transaction,
+  entityType,
+  entityId,
+  originalData,
+  actor,
+}) {
+  const imageMediaId = getEntityImageMediaId({
+    entityType,
+    data: originalData,
+  });
+
+  if (!imageMediaId) {
+    return null;
+  }
+
+  try {
+    return await prepareMediaUsageTransition({
+      transaction,
+
+      previousMediaId: null,
+
+      nextMediaId: imageMediaId,
+
+      entityType,
+      entityId,
+      field: "image",
+      actor,
+    });
+  } catch (error) {
+    if (
+      error instanceof NotFoundError ||
+      error instanceof InvalidRequestError
+    ) {
+      throw new ConflictError(
+        "The image used by this item is no longer available. Restore the media item first.",
+        {
+          imageMediaId,
+        },
+      );
+    }
+
+    throw error;
+  }
+}
+
+async function markPermanentDeletionStarted({ trashReference, actor }) {
+  await adminDb.runTransaction(async (transaction) => {
+    const snapshot = await transaction.get(trashReference);
+
+    if (!snapshot.exists) {
+      throw new NotFoundError("Trash item not found");
+    }
+
+    transaction.update(trashReference, {
+      permanentDeletion: {
+        status: "processing",
+
+        requestedBy: {
+          uid: actor.uid,
+          email: actor.email || "",
+          displayName: actor.displayName || "",
+          role: actor.role || "",
+        },
+
+        requestedAt: FieldValue.serverTimestamp(),
+
+        error: null,
+      },
+    });
+  });
+}
+
+async function markPermanentDeletionFailed({ trashReference, actor, error }) {
+  try {
+    await trashReference.set(
+      {
+        permanentDeletion: {
+          status: "failed",
+
+          requestedBy: {
+            uid: actor.uid,
+            email: actor.email || "",
+            displayName: actor.displayName || "",
+            role: actor.role || "",
+          },
+
+          requestedAt: FieldValue.serverTimestamp(),
+
+          failedAt: FieldValue.serverTimestamp(),
+
+          error:
+            error instanceof Error
+              ? error.message.slice(0, 500)
+              : "Unable to delete the storage object",
+        },
+      },
+      {
+        merge: true,
+      },
+    );
+  } catch (updateError) {
+    console.error("Unable to record permanent deletion failure:", updateError);
+  }
+}
+
+async function deleteMediaStorageObject(storagePath) {
+  if (!storagePath) {
+    return;
+  }
+
+  await adminBucket.file(storagePath).delete({
+    ignoreNotFound: true,
+  });
+}
+
 export async function softDeleteEntity({
   entityType,
   entityId,
@@ -113,6 +294,7 @@ export async function softDeleteEntity({
   await adminDb.runTransaction(async (transaction) => {
     const [sourceSnapshot, trashSnapshot] = await Promise.all([
       transaction.get(sourceReference),
+
       transaction.get(trashReference),
     ]);
 
@@ -126,15 +308,29 @@ export async function softDeleteEntity({
 
     const sourceData = sourceSnapshot.data();
 
+    if (sourceData.isDeleted) {
+      throw new ConflictError("This document is already deleted");
+    }
+
+    const mediaTransition = await prepareImageUsageRelease({
+      transaction,
+      entityType,
+      entityId,
+      sourceData,
+      actor,
+    });
+
     transaction.set(trashReference, {
       entityType,
       entityId,
+
       sourceCollection: collectionName,
 
       displayName:
         sourceData.name?.en ||
         sourceData.title?.en ||
         sourceData.displayName?.en ||
+        sourceData.originalName ||
         sourceData.name ||
         sourceData.title ||
         entityId,
@@ -149,35 +345,63 @@ export async function softDeleteEntity({
       },
 
       deletedAt: FieldValue.serverTimestamp(),
+
       expiresAt: createExpirationDate(),
+
+      permanentDeletion: null,
+
+      mediaUsageReleased: Boolean(mediaTransition),
     });
 
     transaction.update(sourceReference, {
       isDeleted: true,
+
       deletedAt: FieldValue.serverTimestamp(),
+
       deletedBy: actor.uid,
+
       updatedAt: FieldValue.serverTimestamp(),
+
       updatedBy: actor.uid,
     });
 
+    mediaTransition?.apply();
+
     await writeAuditLog({
       actor,
+
       action: `${entityType.toUpperCase()}_DELETE`,
+
       entityType,
       entityId,
+
       before: sourceData,
+
       after: {
         ...sourceData,
+
         isDeleted: true,
         deletedBy: actor.uid,
       },
-      metadata: requestMetadata,
+
+      metadata: {
+        ...requestMetadata,
+
+        imageMediaId: getEntityImageMediaId({
+          entityType,
+          data: sourceData,
+        }),
+
+        mediaUsageReleased: Boolean(mediaTransition),
+      },
+
       transaction,
     });
   });
 
   return {
     trashId: trashReference.id,
+
     entityType,
     entityId,
   };
@@ -199,6 +423,7 @@ export async function getTrashItems({ limit, cursor, entityType }) {
   if (decodedCursor) {
     query = query.startAfter(
       Timestamp.fromDate(new Date(decodedCursor.deletedAt)),
+
       decodedCursor.documentId,
     );
   }
@@ -206,12 +431,14 @@ export async function getTrashItems({ limit, cursor, entityType }) {
   const snapshot = await query.limit(limit + 1).get();
 
   const hasMore = snapshot.docs.length > limit;
+
   const visibleDocuments = hasMore
     ? snapshot.docs.slice(0, limit)
     : snapshot.docs;
 
   const items = visibleDocuments.map((document) => ({
     id: document.id,
+
     ...serializeFirestoreValue(document.data()),
   }));
 
@@ -223,12 +450,14 @@ export async function getTrashItems({ limit, cursor, entityType }) {
     hasMore && lastDocument && deletedAt
       ? encodeCursor({
           deletedAt: deletedAt.toDate().toISOString(),
+
           documentId: lastDocument.id,
         })
       : null;
 
   return {
     items,
+
     pagination: {
       limit,
       count: items.length,
@@ -256,6 +485,12 @@ export async function restoreTrashItem({
 
     const trashData = trashSnapshot.data();
 
+    if (trashData.permanentDeletion) {
+      throw new ConflictError(
+        "Permanent deletion has already started for this item",
+      );
+    }
+
     if (
       !isTrashEntityType(trashData.entityType) ||
       !trashData.entityId ||
@@ -276,13 +511,33 @@ export async function restoreTrashItem({
       throw new ConflictError("An active document with this ID already exists");
     }
 
+    const mediaTransition = await prepareImageUsageRestore({
+      transaction,
+
+      entityType: trashData.entityType,
+
+      entityId: trashData.entityId,
+
+      originalData: trashData.originalData,
+
+      actor,
+    });
+
     transaction.set(
       sourceReference,
       {
         ...trashData.originalData,
+
+        isDeleted: false,
+        deletedAt: null,
+        deletedBy: null,
+
         updatedAt: FieldValue.serverTimestamp(),
+
         updatedBy: actor.uid,
+
         restoredAt: FieldValue.serverTimestamp(),
+
         restoredBy: actor.uid,
       },
       {
@@ -290,26 +545,50 @@ export async function restoreTrashItem({
       },
     );
 
+    mediaTransition?.apply();
+
     transaction.delete(trashReference);
 
     await writeAuditLog({
       actor,
+
       action: `${trashData.entityType.toUpperCase()}_RESTORE`,
+
       entityType: trashData.entityType,
+
       entityId: trashData.entityId,
+
       before: {
         isDeleted: true,
       },
-      after: trashData.originalData,
+
+      after: {
+        ...trashData.originalData,
+
+        isDeleted: false,
+        deletedAt: null,
+        deletedBy: null,
+      },
+
       metadata: {
         ...requestMetadata,
         trashId,
+
+        imageMediaId: getEntityImageMediaId({
+          entityType: trashData.entityType,
+
+          data: trashData.originalData,
+        }),
+
+        mediaUsageRestored: Boolean(mediaTransition),
       },
+
       transaction,
     });
 
     restoredResult = {
       entityType: trashData.entityType,
+
       entityId: trashData.entityId,
     };
   });
@@ -323,6 +602,44 @@ export async function permanentlyDeleteTrashItem({
   requestMetadata = {},
 }) {
   const trashReference = adminDb.collection(COLLECTIONS.TRASH).doc(trashId);
+
+  const initialSnapshot = await trashReference.get();
+
+  if (!initialSnapshot.exists) {
+    throw new NotFoundError("Trash item not found");
+  }
+
+  const initialTrashData = initialSnapshot.data();
+
+  if (
+    !isTrashEntityType(initialTrashData.entityType) ||
+    !initialTrashData.entityId
+  ) {
+    throw new InvalidRequestError("Trash item data is invalid");
+  }
+
+  const storagePath = getMediaStoragePath(initialTrashData);
+
+  await markPermanentDeletionStarted({
+    trashReference,
+    actor,
+  });
+
+  if (storagePath) {
+    try {
+      await deleteMediaStorageObject(storagePath);
+    } catch (error) {
+      await markPermanentDeletionFailed({
+        trashReference,
+        actor,
+        error,
+      });
+
+      throw new InvalidRequestError(
+        "Unable to permanently delete the media file from storage",
+      );
+    }
+  }
 
   let deletedResult = null;
 
@@ -346,26 +663,41 @@ export async function permanentlyDeleteTrashItem({
       .doc(trashData.entityId);
 
     transaction.delete(sourceReference);
+
     transaction.delete(trashReference);
 
     await writeAuditLog({
       actor,
+
       action: "TRASH_DELETE_PERMANENTLY",
+
       entityType: trashData.entityType,
+
       entityId: trashData.entityId,
+
       before: trashData.originalData || null,
+
       after: null,
+
       metadata: {
         ...requestMetadata,
         trashId,
         permanent: true,
+
+        storageDeleted: Boolean(storagePath),
+
+        storagePath,
       },
+
       transaction,
     });
 
     deletedResult = {
       entityType: trashData.entityType,
+
       entityId: trashData.entityId,
+
+      storageDeleted: Boolean(storagePath),
     };
   });
 

@@ -14,6 +14,7 @@ const serverEnvSchema = z.object({
 
   AUTH_SECRET: z.string().min(32),
   REVALIDATE_SECRET: z.string().min(32),
+  CRON_SECRET: z.string().min(32),
 });
 
 const parsedServerEnv = serverEnvSchema.safeParse({
@@ -32,6 +33,8 @@ const parsedServerEnv = serverEnvSchema.safeParse({
   AUTH_SECRET: process.env.AUTH_SECRET,
 
   REVALIDATE_SECRET: process.env.REVALIDATE_SECRET,
+
+  CRON_SECRET: process.env.CRON_SECRET,
 });
 
 if (!parsedServerEnv.success) {

@@ -5,15 +5,27 @@ import { ProductCategoriesSection } from "@/components/public/home/ProductCatego
 import { ProjectReferencesSection } from "@/components/public/home/ProjectReferencesSection";
 import SolutionsSection from "@/components/public/home/SolutionsSection";
 import { StandardsSection } from "@/components/public/home/StandardsSection";
+import { getPublicHomeCategories } from "@/services/categories/category-query.service";
+
+async function loadHomeCategories() {
+  try {
+    return await getPublicHomeCategories();
+  } catch (error) {
+    console.error("Unable to load public home categories:", error);
+
+    return [];
+  }
+}
 
 export default async function PublicHomePage({ params }) {
   const { locale } = await params;
+  const categories = await loadHomeCategories();
 
   return (
     <>
       <HeroSection locale={locale} />
 
-      <ProductCategoriesSection locale={locale} />
+      <ProductCategoriesSection locale={locale} categories={categories} />
 
       <AboutHcsSection locale={locale} />
 

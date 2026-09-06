@@ -2,50 +2,61 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  TbArrowRight,
-  TbAutomaticGearbox,
-  TbColumns,
-  TbDoor,
-  TbDoorExit,
-  TbFlame,
-  TbKey,
-  TbLockPassword,
-  TbRulerMeasure2,
-} from "react-icons/tb";
+import { TbArrowRight } from "react-icons/tb";
 import { useTranslation } from "react-i18next";
+import CategoryIcon from "@/components/common/CategoryIcon";
 import { productCategories } from "@/constants/productCategories";
 
-const categoryIcons = {
-  doorCloser: TbAutomaticGearbox,
-  leverHandle: TbDoor,
-  lock: TbKey,
-  hinge: TbColumns,
-  exit: TbDoorExit,
-  seal: TbRulerMeasure2,
-  fire: TbFlame,
-  electronicLock: TbLockPassword,
-};
+function getLocalizedValue(value, locale) {
+  if (!value || typeof value !== "object") {
+    return "";
+  }
 
-function CategoryIcon({ icon }) {
-  const Icon = categoryIcons[icon] || TbDoor;
+  return value[locale] || value.en || value.th || "";
+}
+
+function getCategoryImage(category) {
+  if (typeof category.image === "string") {
+    return category.image;
+  }
 
   return (
-    <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/6 text-primary transition duration-300 group-hover:border-primary group-hover:bg-primary group-hover:text-white">
-      <Icon aria-hidden="true" strokeWidth={1.7} className="size-[22px]" />
-    </span>
+    category.image?.publicUrl ||
+    category.image?.url ||
+    category.imageUrl ||
+    "/images/products/categories/door-closers.jpg"
   );
 }
 
-function CategoryCard({ category, locale }) {
-  const { t } = useTranslation("public");
+function normalizeCmsCategory(category, locale) {
+  return {
+    id: category.id,
+    slug: category.slug,
+    icon: category.icon || "door",
+    image: getCategoryImage(category),
+    name: getLocalizedValue(category.name, locale),
+    description: getLocalizedValue(category.description, locale),
+    featured: Boolean(category.featured),
+    isRemoteImage: getCategoryImage(category).startsWith("http"),
+  };
+}
 
+function normalizeFallbackCategory(category, t) {
   const name = t(`home.categories.${category.translationKey}.name`);
 
   const description = t(
     `home.categories.${category.translationKey}.description`,
   );
 
+  return {
+    ...category,
+    name,
+    description,
+    isRemoteImage: false,
+  };
+}
+
+function CategoryCard({ category, locale, imageAlt }) {
   return (
     <article
       className={`group relative h-[320px] overflow-hidden rounded-xl border border-border bg-surface shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_18px_45px_rgba(7,42,68,0.12)] lg:h-auto ${
@@ -55,24 +66,21 @@ function CategoryCard({ category, locale }) {
       <Link
         href={`/${locale}/products/category/${category.slug}`}
         className="flex h-full flex-col"
-        aria-label={name}
+        aria-label={category.name}
       >
         <div className="relative min-h-0 flex-1 overflow-hidden bg-[#eef2f5] dark:bg-[#13202b]">
           <Image
             src={category.image}
-            alt={t("home.categories.imageAlt", {
-              category: name,
-            })}
+            alt={imageAlt}
             fill
             quality={88}
+            unoptimized={category.isRemoteImage}
             sizes={
               category.featured
                 ? "(max-width: 767px) 100vw, (max-width: 1023px) 100vw, 33vw"
                 : "(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
             }
-            className={`object-cover object-center transition duration-500 ease-out group-hover:scale-[1.035] ${
-              category.featured ? "lg:object-cover" : ""
-            }`}
+            className="object-cover object-center transition duration-500 ease-out group-hover:scale-[1.035]"
           />
 
           <div
@@ -91,7 +99,7 @@ function CategoryCard({ category, locale }) {
           }`}
         >
           <div className="flex min-w-0 items-center gap-4">
-            <CategoryIcon icon={category.icon} />
+            <CategoryIcon icon={category.icon} className="size-[22px]" />
 
             <div className="min-w-0">
               <h3
@@ -101,12 +109,12 @@ function CategoryCard({ category, locale }) {
                     : "text-base sm:text-lg"
                 }`}
               >
-                {name}
+                {category.name}
               </h3>
 
-              {category.featured && (
+              {category.featured && category.description && (
                 <p className="mt-1.5 line-clamp-2 max-w-md text-sm leading-6 text-muted-foreground">
-                  {description}
+                  {category.description}
                 </p>
               )}
             </div>
@@ -125,8 +133,21 @@ function CategoryCard({ category, locale }) {
   );
 }
 
-export function ProductCategoriesSection({ locale }) {
+export function ProductCategoriesSection({ locale, categories = [] }) {
   const { t } = useTranslation("public");
+
+  const cmsCategories = Array.isArray(categories)
+    ? categories
+        .map((category) => normalizeCmsCategory(category, locale))
+        .filter((category) => category.id && category.slug && category.name)
+    : [];
+
+  const visibleCategories =
+    cmsCategories.length > 0
+      ? cmsCategories
+      : productCategories.map((category) =>
+          normalizeFallbackCategory(category, t),
+        );
 
   return (
     <section className="overflow-hidden bg-background py-16 sm:py-20 lg:py-24">
@@ -164,11 +185,14 @@ export function ProductCategoriesSection({ locale }) {
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[220px_220px_250px] lg:gap-5">
-          {productCategories.map((category) => (
+          {visibleCategories.map((category) => (
             <CategoryCard
               key={category.id}
               category={category}
               locale={locale}
+              imageAlt={t("home.categories.imageAlt", {
+                category: category.name,
+              })}
             />
           ))}
         </div>
@@ -176,5 +200,3 @@ export function ProductCategoriesSection({ locale }) {
     </section>
   );
 }
-
-

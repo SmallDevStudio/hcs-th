@@ -10,8 +10,14 @@ import adminCoreTh from "@/i18n/locales/admin/core/th";
 import auditLogsEn from "@/i18n/locales/admin/audit-logs/en";
 import auditLogsTh from "@/i18n/locales/admin/audit-logs/th";
 
+import categoriesEn from "@/i18n/locales/admin/categories/en";
+import categoriesTh from "@/i18n/locales/admin/categories/th";
+
 import dashboardEn from "@/i18n/locales/admin/dashboard/en";
 import dashboardTh from "@/i18n/locales/admin/dashboard/th";
+
+import mediaEn from "@/i18n/locales/admin/media/en";
+import mediaTh from "@/i18n/locales/admin/media/th";
 
 import siteSettingsEn from "@/i18n/locales/admin/site-settings/en";
 import siteSettingsTh from "@/i18n/locales/admin/site-settings/th";
@@ -27,7 +33,9 @@ export const i18nResources = {
       ...adminEn,
       core: adminCoreEn,
       auditLogs: auditLogsEn,
+      categories: categoriesEn,
       dashboard: dashboardEn,
+      media: mediaEn,
       siteSettings: siteSettingsEn,
       trash: trashEn,
     },
@@ -40,7 +48,9 @@ export const i18nResources = {
       ...adminTh,
       core: adminCoreTh,
       auditLogs: auditLogsTh,
+      categories: categoriesTh,
       dashboard: dashboardTh,
+      media: mediaTh,
       siteSettings: siteSettingsTh,
       trash: trashTh,
     },
