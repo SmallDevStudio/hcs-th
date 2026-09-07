@@ -1,8 +1,20 @@
 import publicEn from "@/i18n/locales/public/en";
 import publicTh from "@/i18n/locales/public/th";
 
+import publicAboutEn from "@/i18n/locales/public/about/en";
+import publicAboutTh from "@/i18n/locales/public/about/th";
+
 import publicProductsEn from "@/i18n/locales/public/products/en";
 import publicProductsTh from "@/i18n/locales/public/products/th";
+
+import publicSolutionsEn from "@/i18n/locales/public/solutions/en";
+import publicSolutionsTh from "@/i18n/locales/public/solutions/th";
+
+import publicProjectsEn from "@/i18n/locales/public/projects/en";
+import publicProjectsTh from "@/i18n/locales/public/projects/th";
+
+import publicStandardsEn from "@/i18n/locales/public/standards/en";
+import publicStandardsTh from "@/i18n/locales/public/standards/th";
 
 import adminEn from "@/i18n/locales/admin/en";
 import adminTh from "@/i18n/locales/admin/th";
@@ -25,8 +37,14 @@ import mediaTh from "@/i18n/locales/admin/media/th";
 import productsEn from "@/i18n/locales/admin/products/en";
 import productsTh from "@/i18n/locales/admin/products/th";
 
+import projectsEn from "@/i18n/locales/admin/projects/en";
+import projectsTh from "@/i18n/locales/admin/projects/th";
+
 import solutionsEn from "@/i18n/locales/admin/solutions/en";
 import solutionsTh from "@/i18n/locales/admin/solutions/th";
+
+import standardsEn from "@/i18n/locales/admin/standards/en";
+import standardsTh from "@/i18n/locales/admin/standards/th";
 
 import siteSettingsEn from "@/i18n/locales/admin/site-settings/en";
 import siteSettingsTh from "@/i18n/locales/admin/site-settings/th";
@@ -34,26 +52,12 @@ import siteSettingsTh from "@/i18n/locales/admin/site-settings/th";
 import trashEn from "@/i18n/locales/admin/trash/en";
 import trashTh from "@/i18n/locales/admin/trash/th";
 
-import publicSolutionsEn from "@/i18n/locales/public/solutions/en";
-import publicSolutionsTh from "@/i18n/locales/public/solutions/th";
-
-import projectsEn from "@/i18n/locales/admin/projects/en";
-import projectsTh from "@/i18n/locales/admin/projects/th";
-
-import publicProjectsEn from "@/i18n/locales/public/projects/en";
-import publicProjectsTh from "@/i18n/locales/public/projects/th";
-
-import standardsEn from "@/i18n/locales/admin/standards/en";
-import standardsTh from "@/i18n/locales/admin/standards/th";
-
-import publicStandardsEn from "@/i18n/locales/public/standards/en";
-import publicStandardsTh from "@/i18n/locales/public/standards/th";
-
 export const i18nResources = {
   en: {
     public: {
       ...publicEn,
 
+      about: publicAboutEn,
       products: publicProductsEn,
       solutions: publicSolutionsEn,
       projects: publicProjectsEn,
@@ -62,6 +66,7 @@ export const i18nResources = {
 
     admin: {
       ...adminEn,
+
       core: adminCoreEn,
       auditLogs: auditLogsEn,
       categories: categoriesEn,
@@ -80,6 +85,7 @@ export const i18nResources = {
     public: {
       ...publicTh,
 
+      about: publicAboutTh,
       products: publicProductsTh,
       solutions: publicSolutionsTh,
       projects: publicProjectsTh,
@@ -88,6 +94,7 @@ export const i18nResources = {
 
     admin: {
       ...adminTh,
+
       core: adminCoreTh,
       auditLogs: auditLogsTh,
       categories: categoriesTh,
