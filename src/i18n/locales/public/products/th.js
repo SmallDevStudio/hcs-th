@@ -54,6 +54,10 @@ const publicProductsTh = {
     nameAscending: "ชื่อ: ก–ฮ",
 
     nameDescending: "ชื่อ: ฮ–ก",
+
+    modelAscending: "รุ่น: ก–ฮ",
+
+    modelDescending: "รุ่น: ฮ–ก",
   },
 
   results: {

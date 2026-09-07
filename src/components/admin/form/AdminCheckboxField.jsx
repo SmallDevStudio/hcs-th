@@ -1,8 +1,6 @@
 "use client";
 
-import { useId } from "react";
 import { useController } from "react-hook-form";
-import { FiCheck } from "react-icons/fi";
 
 export function AdminCheckboxField({
   control,
@@ -12,12 +10,10 @@ export function AdminCheckboxField({
   disabled = false,
   className = "",
 }) {
-  const generatedId = useId();
-  const inputId = `checkbox-${generatedId.replaceAll(":", "")}`;
-
   const controller = useController({
     control,
     name,
+    defaultValue: false,
   });
 
   const fieldName = controller.field.name;
@@ -26,10 +22,11 @@ export function AdminCheckboxField({
   const handleChange = controller.field.onChange;
   const errorMessage = controller.fieldState.error?.message;
 
+  const checked = Boolean(fieldValue);
+
   return (
     <div className={className}>
       <label
-        htmlFor={inputId}
         className={[
           "flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition",
           "hover:border-[#0979c4]/50 hover:bg-[#0979c4]/5",
@@ -41,21 +38,24 @@ export function AdminCheckboxField({
         ].join(" ")}
       >
         <input
-          id={inputId}
           name={fieldName}
           type="checkbox"
-          checked={Boolean(fieldValue)}
+          checked={checked}
           disabled={disabled}
           onBlur={handleBlur}
-          onChange={(event) => handleChange(event.target.checked)}
-          className="peer sr-only"
+          onChange={(event) => {
+            handleChange(event.currentTarget.checked);
+          }}
+          className={[
+            "mt-0.5 size-5 shrink-0 cursor-pointer rounded-md",
+            "border border-slate-300 bg-white accent-[#0979c4]",
+            "focus:outline-none focus:ring-4 focus:ring-[#0979c4]/20",
+            "disabled:cursor-not-allowed",
+            "dark:border-slate-600 dark:bg-slate-900",
+          ].join(" ")}
         />
 
-        <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-white text-transparent transition peer-checked:border-[#0979c4] peer-checked:bg-[#0979c4] peer-checked:text-white peer-focus-visible:ring-4 peer-focus-visible:ring-[#0979c4]/20 dark:border-slate-600 dark:bg-slate-900">
-          <FiCheck className="text-sm" aria-hidden="true" />
-        </span>
-
-        <span>
+        <span className="min-w-0">
           <span className="block text-sm font-semibold text-slate-900 dark:text-white">
             {label}
           </span>

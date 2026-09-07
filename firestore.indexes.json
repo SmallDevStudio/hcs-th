@@ -1173,6 +1173,198 @@
                                            "order":  "ASCENDING"
                                        }
                                    ]
+                    },
+                    {
+                        "collectionGroup":  "solutions",
+                        "queryScope":  "COLLECTION",
+                        "fields":  [
+                                       {
+                                           "fieldPath":  "isDeleted",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "sortOrder",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "__name__",
+                                           "order":  "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+                        "collectionGroup":  "solutions",
+                        "queryScope":  "COLLECTION",
+                        "fields":  [
+                                       {
+                                           "fieldPath":  "isDeleted",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "status",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "sortOrder",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "__name__",
+                                           "order":  "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+                        "collectionGroup":  "solutions",
+                        "queryScope":  "COLLECTION",
+                        "fields":  [
+                                       {
+                                           "fieldPath":  "isDeleted",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "featured",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "sortOrder",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "__name__",
+                                           "order":  "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+                        "collectionGroup":  "solutions",
+                        "queryScope":  "COLLECTION",
+                        "fields":  [
+                                       {
+                                           "fieldPath":  "isDeleted",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "showOnHome",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "sortOrder",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "__name__",
+                                           "order":  "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+                        "collectionGroup":  "solutions",
+                        "queryScope":  "COLLECTION",
+                        "fields":  [
+                                       {
+                                           "fieldPath":  "isDeleted",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "status",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "featured",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "sortOrder",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "__name__",
+                                           "order":  "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+                        "collectionGroup":  "solutions",
+                        "queryScope":  "COLLECTION",
+                        "fields":  [
+                                       {
+                                           "fieldPath":  "isDeleted",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "status",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "showOnHome",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "sortOrder",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "__name__",
+                                           "order":  "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+                        "collectionGroup":  "solutions",
+                        "queryScope":  "COLLECTION",
+                        "fields":  [
+                                       {
+                                           "fieldPath":  "isDeleted",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "featured",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "showOnHome",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "sortOrder",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "__name__",
+                                           "order":  "ASCENDING"
+                                       }
+                                   ]
+                    },
+                    {
+                        "collectionGroup":  "solutions",
+                        "queryScope":  "COLLECTION",
+                        "fields":  [
+                                       {
+                                           "fieldPath":  "isDeleted",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "status",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "featured",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "showOnHome",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "sortOrder",
+                                           "order":  "ASCENDING"
+                                       },
+                                       {
+                                           "fieldPath":  "__name__",
+                                           "order":  "ASCENDING"
+                                       }
+                                   ]
                     }
                 ],
     "fieldOverrides":  [

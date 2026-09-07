@@ -6,20 +6,53 @@ import { ProjectReferencesSection } from "@/components/public/home/ProjectRefere
 import SolutionsSection from "@/components/public/home/SolutionsSection";
 import { StandardsSection } from "@/components/public/home/StandardsSection";
 import { getPublicHomeCategories } from "@/services/categories/category-query.service";
+import { getPublicHomeProducts } from "@/services/products/product-query.service";
+import { getPublicHomeSolutions } from "@/services/solutions/solution-query.service";
 
-async function loadHomeCategories() {
-  try {
-    return await getPublicHomeCategories();
-  } catch (error) {
-    console.error("Unable to load public home categories:", error);
+async function loadHomePageData() {
+  const [categoriesResult, productsResult, solutionsResult] =
+    await Promise.allSettled([
+      getPublicHomeCategories(),
+      getPublicHomeProducts(),
+      getPublicHomeSolutions(),
+    ]);
 
-    return [];
+  if (categoriesResult.status === "rejected") {
+    console.error(
+      "Unable to load public home categories:",
+      categoriesResult.reason,
+    );
   }
+
+  if (productsResult.status === "rejected") {
+    console.error(
+      "Unable to load public home products:",
+      productsResult.reason,
+    );
+  }
+
+  if (solutionsResult.status === "rejected") {
+    console.error(
+      "Unable to load public home solutions:",
+      solutionsResult.reason,
+    );
+  }
+
+  return {
+    categories:
+      categoriesResult.status === "fulfilled" ? categoriesResult.value : [],
+
+    products: productsResult.status === "fulfilled" ? productsResult.value : [],
+
+    solutions:
+      solutionsResult.status === "fulfilled" ? solutionsResult.value : [],
+  };
 }
 
 export default async function PublicHomePage({ params }) {
   const { locale } = await params;
-  const categories = await loadHomeCategories();
+
+  const { categories, products, solutions } = await loadHomePageData();
 
   return (
     <>
@@ -29,9 +62,9 @@ export default async function PublicHomePage({ params }) {
 
       <AboutHcsSection locale={locale} />
 
-      <FeaturedProductsSection locale={locale} />
+      <FeaturedProductsSection locale={locale} products={products} />
 
-      <SolutionsSection locale={locale} />
+      <SolutionsSection locale={locale} items={solutions} />
 
       <StandardsSection locale={locale} />
 

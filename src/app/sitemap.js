@@ -61,19 +61,12 @@ async function loadAllPublishedProducts() {
   while (hasMore && page < 50) {
     const result = await getPublicProducts({
       limit: 100,
-
       cursor,
-
       categoryId: undefined,
-
       productTypeSlug: undefined,
-
       standard: undefined,
-
       featured: undefined,
-
       fireRated: undefined,
-
       search: undefined,
     });
 
@@ -104,6 +97,12 @@ export default async function sitemap() {
     ...createLocalizedEntries({
       pathname: "/products",
       changeFrequency: "weekly",
+      priority: 0.9,
+    }),
+
+    ...createLocalizedEntries({
+      pathname: "/solutions",
+      changeFrequency: "monthly",
       priority: 0.9,
     }),
   ];

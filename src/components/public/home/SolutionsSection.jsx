@@ -3,97 +3,114 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { MdOutlineRoomService } from "react-icons/md";
+import { FaConciergeBell } from "react-icons/fa";
 import {
   TbArrowRight,
   TbBriefcase,
+  TbBuilding,
+  TbBuildingHospital,
+  TbBuildingSkyscraper,
+  TbFlame,
+  TbLock,
   TbSettings,
-  TbSquareRoundedPlus,
 } from "react-icons/tb";
-import { FaConciergeBell } from "react-icons/fa";
 
-const solutionIcons = {
+const SOLUTION_ICONS = {
   hospitality: FaConciergeBell,
-  healthcare: TbSquareRoundedPlus,
+  healthcare: TbBuildingHospital,
   commercial: TbBriefcase,
   industrial: TbSettings,
+  building: TbBuilding,
+  security: TbLock,
+  "fire-rated": TbFlame,
+  "access-control": TbBuildingSkyscraper,
 };
 
-const DEFAULT_SOLUTIONS = [
-  {
-    id: "hospitality",
-    slug: "hospitality",
-    translationKey: "hospitality",
-    image: "/images/home/solutions/solution-hospitality.jpg",
-    icon: "hospitality",
-    order: 1,
-    isPublished: true,
-  },
-  {
-    id: "healthcare",
-    slug: "healthcare",
-    translationKey: "healthcare",
-    image: "/images/home/solutions/solution-healthcare.jpg",
-    icon: "healthcare",
-    order: 2,
-    isPublished: true,
-  },
-  {
-    id: "commercial",
-    slug: "commercial",
-    translationKey: "commercial",
-    image: "/images/home/solutions/solution-commercial.jpg",
-    icon: "commercial",
-    order: 3,
-    isPublished: true,
-  },
-  {
-    id: "industrial",
-    slug: "industrial",
-    translationKey: "industrial",
-    image: "/images/home/solutions/solution-industrial.jpg",
-    icon: "industrial",
-    order: 4,
-    isPublished: true,
-  },
-];
+const FALLBACK_IMAGES = {
+  hospitality: "/images/home/solutions/solution-hospitality.jpg",
 
-export default function SolutionsSection({
-  locale = "en",
-  items = DEFAULT_SOLUTIONS,
-}) {
+  healthcare: "/images/home/solutions/solution-healthcare.jpg",
+
+  commercial: "/images/home/solutions/solution-commercial.jpg",
+
+  industrial: "/images/home/solutions/solution-industrial.jpg",
+};
+
+function getLocalizedValue(value, locale, fallback = "") {
+  return value?.[locale] || value?.en || value?.th || fallback;
+}
+
+function getSolutionImage(solution) {
+  return (
+    solution.image?.publicUrl ||
+    FALLBACK_IMAGES[solution.slug] ||
+    FALLBACK_IMAGES.commercial
+  );
+}
+
+export default function SolutionsSection({ locale = "en", items = [] }) {
   const { t } = useTranslation("public");
+
   const currentLocale = locale === "th" ? "th" : "en";
 
-  const visibleItems = [...items]
-    .filter((item) => item.isPublished !== false)
-    .sort((firstItem, secondItem) => {
-      return (firstItem.order ?? 0) - (secondItem.order ?? 0);
-    });
+  const visibleItems = (Array.isArray(items) ? items : [])
+    .filter(
+      (solution) =>
+        solution && solution.status === "published" && solution.showOnHome,
+    )
+    .sort(
+      (firstSolution, secondSolution) =>
+        Number(firstSolution.sortOrder || 0) -
+        Number(secondSolution.sortOrder || 0),
+    )
+    .slice(0, 4);
+
+  if (!visibleItems.length) {
+    return null;
+  }
 
   return (
     <section id="solutions" className="bg-background pb-14 pt-0 sm:pb-16">
       <div className="container-hcs">
-        <div className="mb-4">
-          <p className="mb-1 text-[11px] font-extrabold uppercase tracking-[0.08em] text-primary">
-            {t("home.solutions.eyebrow")}
-          </p>
+        <div className="mb-4 flex items-end justify-between gap-5">
+          <div>
+            <p className="mb-1 text-[11px] font-extrabold uppercase tracking-[0.08em] text-primary">
+              {t("home.solutions.eyebrow")}
+            </p>
 
-          <h2 className="text-2xl font-extrabold uppercase leading-none tracking-[-0.025em] text-foreground sm:text-[28px]">
-            {t("home.solutions.title")}
-          </h2>
+            <h2 className="text-2xl font-extrabold uppercase leading-none tracking-[-0.025em] text-foreground sm:text-[28px]">
+              {t("home.solutions.title")}
+            </h2>
+          </div>
+
+          <Link
+            href={`/${currentLocale}/solutions`}
+            className="hidden items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.06em] text-primary transition hover:text-[#065f9c] sm:inline-flex"
+          >
+            {t("common.viewAll")}
+
+            <TbArrowRight aria-hidden="true" className="size-4" />
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
-          {visibleItems.map((solution) => {
-            const Icon = solutionIcons[solution.icon] || TbBriefcase;
-            const translatedName = t(
-              `home.solutions.${solution.translationKey}.name`,
+          {visibleItems.map((solution, index) => {
+            const Icon = SOLUTION_ICONS[solution.icon] || TbBuilding;
+
+            const name = getLocalizedValue(
+              solution.name,
+              currentLocale,
+              solution.slug,
             );
-            const name =
-              solution.name?.[currentLocale] ||
-              solution.name?.en ||
-              translatedName;
+
+            const description = getLocalizedValue(
+              solution.shortDescription,
+              currentLocale,
+            );
+
+            const imageUrl = getSolutionImage(solution);
+
+            const remoteImage = Boolean(solution.image?.publicUrl);
 
             return (
               <article
@@ -101,18 +118,26 @@ export default function SolutionsSection({
                 className="group relative aspect-[3/2] overflow-hidden rounded-md bg-[#071b2d] shadow-sm"
               >
                 <Image
-                  src={solution.image}
-                  alt={t("home.solutions.imageAlt", { solution: name })}
+                  src={imageUrl}
+                  alt={
+                    getLocalizedValue(
+                      solution.image?.altText,
+                      currentLocale,
+                      name,
+                    ) || name
+                  }
                   fill
-                  quality={86}
+                  unoptimized={remoteImage}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  quality={remoteImage ? undefined : 86}
                   sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
                   className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.035]"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#061522]/95 via-[#061522]/18 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#061522]/95 via-[#061522]/38 to-transparent" />
 
                 <Link
-                  href={`/${currentLocale}/solutions/${solution.slug}`}
+                  href={`/${currentLocale}/solutions#${solution.slug}`}
                   aria-label={`${t("common.exploreSolution")}: ${name}`}
                   className="absolute inset-0 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
                 >
@@ -123,15 +148,17 @@ export default function SolutionsSection({
 
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 px-4 pb-4 sm:px-5 sm:pb-5">
                   <div className="min-w-0 text-white">
-                    <Icon
-                      aria-hidden="true"
-                      className="mb-2.5 size-9"
-                      strokeWidth={1.7}
-                    />
+                    <Icon aria-hidden="true" className="mb-2 size-9" />
 
                     <h3 className="truncate text-sm font-bold uppercase tracking-[0.01em] sm:text-[15px]">
                       {name}
                     </h3>
+
+                    {description ? (
+                      <p className="mt-1 line-clamp-2 text-[10px] leading-4 text-white/75">
+                        {description}
+                      </p>
+                    ) : null}
                   </div>
 
                   <TbArrowRight
@@ -146,9 +173,18 @@ export default function SolutionsSection({
             );
           })}
         </div>
+
+        <div className="mt-5 sm:hidden">
+          <Link
+            href={`/${currentLocale}/solutions`}
+            className="inline-flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.06em] text-primary"
+          >
+            {t("common.viewAll")}
+
+            <TbArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        </div>
       </div>
     </section>
   );
 }
-
-

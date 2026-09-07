@@ -54,6 +54,10 @@ const publicProductsEn = {
     nameAscending: "Name: A–Z",
 
     nameDescending: "Name: Z–A",
+
+    modelAscending: "Model: A–Z",
+
+    modelDescending: "Model: Z–A",
   },
 
   results: {

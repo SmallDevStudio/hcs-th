@@ -356,7 +356,7 @@ export function ProductFormModal({
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/60 p-0 backdrop-blur-sm sm:items-center sm:p-5"
+      className="fixed inset-0 z-[80] flex items-end justify-center overflow-hidden bg-slate-950/60 p-0 sm:items-center sm:p-5"
       role="dialog"
       aria-modal="true"
       aria-labelledby="product-form-title"
@@ -372,7 +372,7 @@ export function ProductFormModal({
       <form
         onSubmit={handleSubmit(submitProduct)}
         noValidate
-        className="relative z-10 flex max-h-[96vh] w-full max-w-7xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl dark:bg-[#071522] sm:rounded-3xl"
+        className="relative z-10 isolate flex h-[100dvh] w-full max-w-7xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl dark:bg-[#071522] sm:h-[calc(100dvh-2.5rem)] sm:max-h-[960px] sm:rounded-3xl"
       >
         <header className="flex items-start justify-between border-b border-slate-200 px-5 py-5 dark:border-slate-800 sm:px-6">
           <div>

@@ -35,6 +35,36 @@ function serializeFirestoreValue(value) {
   return value;
 }
 
+function serializeTimestamp(value) {
+  if (!value) {
+    return null;
+  }
+
+  if (typeof value.toDate === "function") {
+    return value.toDate().toISOString();
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  if (typeof value === "string") {
+    const parsedDate = new Date(value);
+
+    return Number.isNaN(parsedDate.getTime())
+      ? value
+      : parsedDate.toISOString();
+  }
+
+  if (typeof value === "number") {
+    const parsedDate = new Date(value);
+
+    return Number.isNaN(parsedDate.getTime()) ? null : parsedDate.toISOString();
+  }
+
+  return null;
+}
+
 function encodeCursor({ createdAt, documentId }) {
   const payload = JSON.stringify({
     createdAt,
@@ -152,7 +182,7 @@ export async function getAuditLogs({
   const nextCursor =
     hasMore && lastDocument && lastDocumentCreatedAt
       ? encodeCursor({
-          createdAt: lastDocumentCreatedAt.toDate().toISOString(),
+          createdAt: serializeTimestamp(lastDocumentCreatedAt),
           documentId: lastDocument.id,
         })
       : null;

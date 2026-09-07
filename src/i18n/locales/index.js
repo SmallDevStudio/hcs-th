@@ -25,11 +25,17 @@ import mediaTh from "@/i18n/locales/admin/media/th";
 import productsEn from "@/i18n/locales/admin/products/en";
 import productsTh from "@/i18n/locales/admin/products/th";
 
+import solutionsEn from "@/i18n/locales/admin/solutions/en";
+import solutionsTh from "@/i18n/locales/admin/solutions/th";
+
 import siteSettingsEn from "@/i18n/locales/admin/site-settings/en";
 import siteSettingsTh from "@/i18n/locales/admin/site-settings/th";
 
 import trashEn from "@/i18n/locales/admin/trash/en";
 import trashTh from "@/i18n/locales/admin/trash/th";
+
+import publicSolutionsEn from "@/i18n/locales/public/solutions/en";
+import publicSolutionsTh from "@/i18n/locales/public/solutions/th";
 
 export const i18nResources = {
   en: {
@@ -37,6 +43,7 @@ export const i18nResources = {
       ...publicEn,
 
       products: publicProductsEn,
+      solutions: publicSolutionsEn,
     },
 
     admin: {
@@ -54,6 +61,8 @@ export const i18nResources = {
 
       products: productsEn,
 
+      solutions: solutionsEn,
+
       siteSettings: siteSettingsEn,
 
       trash: trashEn,
@@ -65,6 +74,7 @@ export const i18nResources = {
       ...publicTh,
 
       products: publicProductsTh,
+      solutions: publicSolutionsTh,
     },
 
     admin: {
@@ -81,6 +91,8 @@ export const i18nResources = {
       media: mediaTh,
 
       products: productsTh,
+
+      solutions: solutionsTh,
 
       siteSettings: siteSettingsTh,
 

@@ -25,6 +25,8 @@ import {
 
 const IMAGE_USAGE_ENTITY_TYPES = new Set([
   AUDIT_ENTITY_TYPES.CATEGORY || "category",
+
+  AUDIT_ENTITY_TYPES.SOLUTION || "solution",
 ]);
 
 const PRODUCT_ENTITY_TYPE = AUDIT_ENTITY_TYPES.PRODUCT || "product";
