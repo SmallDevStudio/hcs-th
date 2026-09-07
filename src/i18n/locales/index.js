@@ -43,6 +43,12 @@ import projectsTh from "@/i18n/locales/admin/projects/th";
 import publicProjectsEn from "@/i18n/locales/public/projects/en";
 import publicProjectsTh from "@/i18n/locales/public/projects/th";
 
+import standardsEn from "@/i18n/locales/admin/standards/en";
+import standardsTh from "@/i18n/locales/admin/standards/th";
+
+import publicStandardsEn from "@/i18n/locales/public/standards/en";
+import publicStandardsTh from "@/i18n/locales/public/standards/th";
+
 export const i18nResources = {
   en: {
     public: {
@@ -51,30 +57,22 @@ export const i18nResources = {
       products: publicProductsEn,
       solutions: publicSolutionsEn,
       projects: publicProjectsEn,
+      standards: publicStandardsEn,
     },
 
     admin: {
       ...adminEn,
-
       core: adminCoreEn,
-
       auditLogs: auditLogsEn,
-
       categories: categoriesEn,
-
       dashboard: dashboardEn,
-
       media: mediaEn,
-
       products: productsEn,
-
-      solutions: solutionsEn,
-
-      siteSettings: siteSettingsEn,
-
-      trash: trashEn,
-
       projects: projectsEn,
+      solutions: solutionsEn,
+      standards: standardsEn,
+      siteSettings: siteSettingsEn,
+      trash: trashEn,
     },
   },
 
@@ -85,30 +83,22 @@ export const i18nResources = {
       products: publicProductsTh,
       solutions: publicSolutionsTh,
       projects: publicProjectsTh,
+      standards: publicStandardsTh,
     },
 
     admin: {
       ...adminTh,
-
       core: adminCoreTh,
-
       auditLogs: auditLogsTh,
-
       categories: categoriesTh,
-
       dashboard: dashboardTh,
-
       media: mediaTh,
-
       products: productsTh,
-
-      solutions: solutionsTh,
-
-      siteSettings: siteSettingsTh,
-
-      trash: trashTh,
-
       projects: projectsTh,
+      solutions: solutionsTh,
+      standards: standardsTh,
+      siteSettings: siteSettingsTh,
+      trash: trashTh,
     },
   },
 };

@@ -1,1789 +1,1805 @@
 ﻿{
-    "indexes":  [
-                    {
-                        "collectionGroup":  "auditLogs",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "action",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "auditLogs",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "entityType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "auditLogs",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "actor.uid",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "auditLogs",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "action",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "entityType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "auditLogs",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "action",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "actor.uid",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "auditLogs",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "entityType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "actor.uid",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "auditLogs",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "action",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "entityType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "actor.uid",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "trash",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "entityType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "deletedAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "type",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "folder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "type",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "folder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "isUsed",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "type",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "isUsed",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "folder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "isUsed",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "type",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "folder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "isUsed",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "searchTokens",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "type",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "searchTokens",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "folder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "searchTokens",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "type",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "folder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "searchTokens",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "isUsed",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "searchTokens",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "type",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "isUsed",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "searchTokens",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "folder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "isUsed",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "searchTokens",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "type",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "folder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "isUsed",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "searchTokens",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "DESCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "DESCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "media",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "createdAt",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "categories",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "categories",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "categories",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "categories",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "categories",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "searchTokens",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "categories",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "searchTokens",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "categoryId",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "productTypeSlug",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "standardKeys",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "fireRated",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "searchTokens",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "categoryId",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "productTypeSlug",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "standardKeys",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "fireRated",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "products",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "searchTokens",
-                                           "arrayConfig":  "CONTAINS"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "solutions",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "solutions",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "solutions",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "solutions",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "solutions",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "solutions",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "solutions",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "solutions",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "buildingType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "buildingType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "buildingType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "buildingType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "buildingType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "buildingType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "buildingType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    },
-                    {
-                        "collectionGroup":  "projects",
-                        "queryScope":  "COLLECTION",
-                        "fields":  [
-                                       {
-                                           "fieldPath":  "isDeleted",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "status",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "buildingType",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "featured",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "showOnHome",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "sortOrder",
-                                           "order":  "ASCENDING"
-                                       },
-                                       {
-                                           "fieldPath":  "__name__",
-                                           "order":  "ASCENDING"
-                                       }
-                                   ]
-                    }
-                ],
-    "fieldOverrides":  [
-
-                       ]
+  "indexes": [
+    {
+      "collectionGroup": "auditLogs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "action",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "auditLogs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "entityType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "auditLogs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "actor.uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "auditLogs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "action",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "entityType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "auditLogs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "action",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "actor.uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "auditLogs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "entityType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "actor.uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "auditLogs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "action",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "entityType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "actor.uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "trash",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "entityType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "deletedAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "folder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "folder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isUsed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isUsed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "folder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isUsed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "folder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isUsed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "folder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "folder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isUsed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isUsed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "folder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isUsed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "folder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "isUsed",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "categories",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "categories",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "categories",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "categories",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "categories",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "categories",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "categoryId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "productTypeSlug",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "standardKeys",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "fireRated",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "categoryId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "productTypeSlug",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "standardKeys",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "fireRated",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "searchTokens",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "solutions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "solutions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "solutions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "solutions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "solutions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "solutions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "solutions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "solutions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "buildingType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "buildingType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "buildingType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "buildingType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "buildingType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "buildingType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "buildingType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "projects",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "buildingType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "featured",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "showOnHome",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "standards",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isDeleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sortOrder",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
 }

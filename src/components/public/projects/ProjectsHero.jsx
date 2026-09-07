@@ -1,6 +1,7 @@
 import Image from "next/image";
 
-const PROJECTS_HERO_IMAGE = "/images/projects/project-luxury-hotel-bangkok.jpg";
+const PROJECTS_HERO_IMAGE =
+  "/images/home/projects/project-luxury-hotel-bangkok.jpg";
 
 export function ProjectsHero({ t }) {
   return (

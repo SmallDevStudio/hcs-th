@@ -10,6 +10,7 @@ import { getPublicHomeCategories } from "@/services/categories/category-query.se
 import { getPublicHomeProducts } from "@/services/products/product-query.service";
 import { getPublicHomeProjects } from "@/services/projects/project-query.service";
 import { getPublicHomeSolutions } from "@/services/solutions/solution-query.service";
+import { getPublicHomeStandards } from "@/services/standards/standard-query.service";
 
 function normalizeResult(result) {
   if (Array.isArray(result)) {
@@ -28,13 +29,19 @@ function normalizeResult(result) {
 }
 
 async function loadHomePageData() {
-  const [categoriesResult, productsResult, solutionsResult, projectsResult] =
-    await Promise.allSettled([
-      getPublicHomeCategories(),
-      getPublicHomeProducts(),
-      getPublicHomeSolutions(),
-      getPublicHomeProjects(),
-    ]);
+  const [
+    categoriesResult,
+    productsResult,
+    solutionsResult,
+    standardsResult,
+    projectsResult,
+  ] = await Promise.allSettled([
+    getPublicHomeCategories(),
+    getPublicHomeProducts(),
+    getPublicHomeSolutions(),
+    getPublicHomeStandards(),
+    getPublicHomeProjects(),
+  ]);
 
   if (categoriesResult.status === "rejected") {
     console.error(
@@ -54,6 +61,13 @@ async function loadHomePageData() {
     console.error(
       "Unable to load public home solutions:",
       solutionsResult.reason,
+    );
+  }
+
+  if (standardsResult.status === "rejected") {
+    console.error(
+      "Unable to load public home standards:",
+      standardsResult.reason,
     );
   }
 
@@ -80,6 +94,11 @@ async function loadHomePageData() {
         ? normalizeResult(solutionsResult.value)
         : [],
 
+    standards:
+      standardsResult.status === "fulfilled"
+        ? normalizeResult(standardsResult.value)
+        : [],
+
     projects:
       projectsResult.status === "fulfilled"
         ? normalizeResult(projectsResult.value)
@@ -90,7 +109,7 @@ async function loadHomePageData() {
 export default async function PublicHomePage({ params }) {
   const { locale } = await params;
 
-  const { categories, products, solutions, projects } =
+  const { categories, products, solutions, standards, projects } =
     await loadHomePageData();
 
   return (
@@ -105,7 +124,7 @@ export default async function PublicHomePage({ params }) {
 
       <SolutionsSection locale={locale} items={solutions} />
 
-      <StandardsSection locale={locale} />
+      <StandardsSection locale={locale} standards={standards} />
 
       <ProjectReferencesSection locale={locale} projects={projects} />
     </>

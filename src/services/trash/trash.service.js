@@ -28,6 +28,11 @@ import {
   prepareProjectRelationshipRestore,
 } from "@/services/projects/project-relationships.service";
 
+import {
+  prepareStandardRelationshipRelease,
+  prepareStandardRelationshipRestore,
+} from "@/services/standards/standard-relationships.service";
+
 const IMAGE_USAGE_ENTITY_TYPES = new Set([
   AUDIT_ENTITY_TYPES.CATEGORY || "category",
 
@@ -37,6 +42,8 @@ const IMAGE_USAGE_ENTITY_TYPES = new Set([
 const PRODUCT_ENTITY_TYPE = AUDIT_ENTITY_TYPES.PRODUCT || "product";
 
 const PROJECT_ENTITY_TYPE = AUDIT_ENTITY_TYPES.PROJECT || "project";
+
+const STANDARD_ENTITY_TYPE = AUDIT_ENTITY_TYPES.STANDARD || "standard";
 
 function serializeFirestoreValue(value) {
   if (value === null || value === undefined) {
@@ -187,6 +194,24 @@ function getProjectRelationshipMetadata(data = {}) {
   };
 }
 
+function getStandardRelationshipMetadata(data = {}) {
+  if (!data) {
+    return null;
+  }
+
+  return {
+    documentMediaId: data.documentMediaId || null,
+
+    relatedCategoryIds: Array.isArray(data.relatedCategoryIds)
+      ? data.relatedCategoryIds
+      : [],
+
+    relatedProductIds: Array.isArray(data.relatedProductIds)
+      ? data.relatedProductIds
+      : [],
+  };
+}
+
 async function prepareImageUsageRelease({
   transaction,
   entityType,
@@ -302,6 +327,23 @@ async function prepareEntityRelationshipRelease({
     };
   }
 
+  if (entityType === STANDARD_ENTITY_TYPE) {
+    const transition = await prepareStandardRelationshipRelease({
+      transaction,
+
+      standardId: entityId,
+
+      standardData: sourceData,
+
+      actor,
+    });
+
+    return {
+      type: "standard",
+      transition,
+    };
+  }
+
   const transition = await prepareImageUsageRelease({
     transaction,
     entityType,
@@ -387,6 +429,39 @@ async function prepareEntityRelationshipRestore({
     }
   }
 
+  if (entityType === STANDARD_ENTITY_TYPE) {
+    try {
+      const transition = await prepareStandardRelationshipRestore({
+        transaction,
+
+        standardId: entityId,
+
+        standardData: originalData,
+
+        actor,
+      });
+
+      return {
+        type: "standard",
+        transition,
+      };
+    } catch (error) {
+      if (
+        error instanceof NotFoundError ||
+        error instanceof InvalidRequestError
+      ) {
+        throw new ConflictError(
+          "This standard cannot be restored because its document, category or product is no longer available. Restore the related items first.",
+          {
+            relationships: getStandardRelationshipMetadata(originalData),
+          },
+        );
+      }
+
+      throw error;
+    }
+  }
+
   const transition = await prepareImageUsageRestore({
     transaction,
     entityType,
@@ -431,6 +506,22 @@ function createRestoredData({ entityType, originalData, relationship }) {
       coverImage: relationship.transition.coverImage,
 
       gallery: relationship.transition.gallery,
+    };
+  }
+
+  if (
+    entityType === STANDARD_ENTITY_TYPE &&
+    relationship?.type === "standard" &&
+    relationship.transition
+  ) {
+    return {
+      ...originalData,
+
+      document: relationship.transition.document,
+
+      relatedCategories: relationship.transition.categories,
+
+      relatedProducts: relationship.transition.products,
     };
   }
 
@@ -640,21 +731,19 @@ export async function softDeleteEntity({
             : null,
 
         projectRelationships:
-          trashData.entityType === PROJECT_ENTITY_TYPE
-            ? getProjectRelationshipMetadata(restoredOriginalData)
+          entityType === PROJECT_ENTITY_TYPE
+            ? getProjectRelationshipMetadata(sourceData)
+            : null,
+
+        standardRelationships:
+          entityType === STANDARD_ENTITY_TYPE
+            ? getStandardRelationshipMetadata(sourceData)
             : null,
 
         relationshipType: relationship.type || null,
 
         relationshipsReleased: Boolean(relationship.transition),
       },
-
-      projectRelationships:
-        entityType === PROJECT_ENTITY_TYPE
-          ? getProjectRelationshipMetadata(sourceData)
-          : null,
-
-      transaction,
     });
   });
 
@@ -855,6 +944,16 @@ export async function restoreTrashItem({
         productRelationships:
           trashData.entityType === PRODUCT_ENTITY_TYPE
             ? getProductRelationshipMetadata(restoredOriginalData)
+            : null,
+
+        projectRelationships:
+          trashData.entityType === PROJECT_ENTITY_TYPE
+            ? getProjectRelationshipMetadata(restoredOriginalData)
+            : null,
+
+        standardRelationships:
+          trashData.entityType === STANDARD_ENTITY_TYPE
+            ? getStandardRelationshipMetadata(restoredOriginalData)
             : null,
 
         relationshipType: relationship.type || null,
