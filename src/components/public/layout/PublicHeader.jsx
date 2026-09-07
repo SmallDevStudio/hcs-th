@@ -1,52 +1,102 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  FiArrowRight,
-  FiMail,
-  FiMapPin,
-  FiMenu,
-  FiPhone,
-  FiX,
-} from "react-icons/fi";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { FiArrowRight, FiMenu } from "react-icons/fi";
+
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { LanguageSwitcher } from "@/components/public/layout/LanguageSwitcher";
+import { PublicMobileNavigation } from "@/components/public/layout/PublicMobileNavigation";
+import { PublicNavigation } from "@/components/public/layout/PublicNavigation";
+import { PublicTopBar } from "@/components/public/layout/PublicTopBar";
 import { siteConfig } from "@/config/site";
 
-function normalizePath(pathname) {
-  if (!pathname) {
-    return "/";
+function getLocalizedValue(value, locale, fallback = "") {
+  if (typeof value === "string") {
+    return value || fallback;
   }
 
-  const normalized = pathname.replace(/\/+$/, "");
-
-  return normalized || "/";
+  return value?.[locale] || value?.en || value?.th || fallback;
 }
 
-function isNavigationActive(pathname, href, locale) {
-  const localizedHref = href ? `/${locale}${href}` : `/${locale}`;
-  const currentPath = normalizePath(pathname);
-  const targetPath = normalizePath(localizedHref);
+function createPhoneHref(phone) {
+  const normalizedPhone = String(phone || "").replace(/[^\d+]/g, "");
 
-  if (!href) {
-    return currentPath === targetPath;
-  }
-
-  return currentPath === targetPath || currentPath.startsWith(`${targetPath}/`);
+  return normalizedPhone ? `tel:${normalizedPhone}` : "";
 }
 
-export function PublicHeader({ locale }) {
+function createEmailHref(email) {
+  const normalizedEmail = String(email || "").trim();
+
+  return normalizedEmail ? `mailto:${normalizedEmail}` : "";
+}
+
+function getHeaderContact(settings, locale) {
+  const phone = settings?.contact?.phone || siteConfig.contact.phoneDisplay;
+
+  const email = settings?.contact?.email || siteConfig.contact.email;
+
+  const location = getLocalizedValue(
+    settings?.contact?.address,
+    locale,
+    siteConfig.contact.location,
+  );
+
+  return {
+    phone,
+
+    phoneHref: createPhoneHref(phone) || siteConfig.contact.phoneHref,
+
+    email,
+
+    emailHref: createEmailHref(email) || siteConfig.contact.emailHref,
+
+    location,
+  };
+}
+
+function createNavigationItems() {
+  return siteConfig.navigation.map((item, index) => ({
+    id: item.key,
+
+    key: item.key,
+
+    label: item.label || null,
+
+    href: item.href,
+
+    visible: item.visible !== false,
+
+    status: item.status || "published",
+
+    sortOrder: Number(item.sortOrder ?? (index + 1) * 10),
+
+    openInNewTab: Boolean(item.openInNewTab),
+  }));
+}
+
+export function PublicHeader({ locale = "en", settings }) {
   const { t } = useTranslation("public");
-  const pathname = usePathname();
+
+  const currentLocale = locale === "th" ? "th" : "en";
+
+  const contact = getHeaderContact(settings, currentLocale);
+
+  /*
+   * ปัจจุบันใช้ static config
+   * อนาคตเปลี่ยนบรรทัดนี้เป็น navigationItems
+   * ที่โหลดจาก Firestore ได้ทันที
+   */
+  const navigationItems = createNavigationItems();
+
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     if (!mobileOpen) {
       document.body.style.removeProperty("overflow");
+
       return undefined;
     }
 
@@ -62,60 +112,21 @@ export function PublicHeader({ locale }) {
 
     return () => {
       document.body.style.removeProperty("overflow");
+
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [mobileOpen]);
 
-  function openMobileMenu() {
-    setMobileOpen(true);
-  }
-
-  function closeMobileMenu() {
-    setMobileOpen(false);
-  }
-
   return (
     <>
       <header className="sticky top-0 z-50">
-        <div className="hidden bg-[#07111b] text-white lg:block">
-          <div className="container-hcs flex h-9 items-center justify-between text-xs">
-            <div className="flex items-center gap-6">
-              <a
-                href={siteConfig.contact.phoneHref}
-                className="inline-flex items-center gap-2 text-white/80 transition hover:text-white"
-              >
-                <FiPhone aria-hidden="true" />
-
-                <span>{siteConfig.contact.phoneDisplay}</span>
-              </a>
-
-              <a
-                href={siteConfig.contact.emailHref}
-                className="inline-flex items-center gap-2 text-white/80 transition hover:text-white"
-              >
-                <FiMail aria-hidden="true" />
-
-                <span>{siteConfig.contact.email}</span>
-              </a>
-
-              <span className="inline-flex items-center gap-2 text-white/70">
-                <FiMapPin aria-hidden="true" />
-
-                <span>{siteConfig.contact.location}</span>
-              </span>
-            </div>
-
-            <span className="font-medium tracking-wide text-white/70">
-              HARDWARE &amp; SECURITY SOLUTIONS
-            </span>
-          </div>
-        </div>
+        <PublicTopBar contact={contact} />
 
         <div className="border-b border-border bg-[var(--header-background)] backdrop-blur-xl">
           <div className="container-hcs flex h-[74px] items-center justify-between gap-6">
             <Link
-              href={`/${locale}`}
-              onClick={closeMobileMenu}
+              href={`/${currentLocale}`}
+              onClick={() => setMobileOpen(false)}
               className="relative z-10 inline-flex shrink-0 items-center"
               aria-label="HCS Thailand"
             >
@@ -138,56 +149,17 @@ export function PublicHeader({ locale }) {
               />
             </Link>
 
-            <nav
-              aria-label="Main navigation"
-              className="hidden h-full items-center xl:flex"
-            >
-              <ul className="flex h-full items-center gap-1">
-                {siteConfig.navigation.map((item) => {
-                  const href = item.href
-                    ? `/${locale}${item.href}`
-                    : `/${locale}`;
-
-                  const active = isNavigationActive(
-                    pathname,
-                    item.href,
-                    locale,
-                  );
-
-                  return (
-                    <li key={item.key} className="h-full">
-                      <Link
-                        href={href}
-                        className={`relative flex h-full items-center px-3 text-sm font-semibold transition ${
-                          active
-                            ? "text-primary"
-                            : "text-foreground hover:text-primary"
-                        }`}
-                      >
-                        {t(`navigation.${item.key}`)}
-
-                        {active && (
-                          <span
-                            aria-hidden="true"
-                            className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-primary"
-                          />
-                        )}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </nav>
+            <PublicNavigation locale={currentLocale} items={navigationItems} />
 
             <div className="flex items-center gap-2">
               <div className="hidden items-center gap-2 sm:flex">
-                <LanguageSwitcher locale={locale} />
+                <LanguageSwitcher locale={currentLocale} />
 
                 <ThemeToggle />
               </div>
 
               <Link
-                href={`/${locale}/contact`}
+                href={`/${currentLocale}/contact`}
                 className="hidden h-10 items-center gap-2 rounded-md bg-primary px-4 text-sm font-bold !text-white shadow-sm transition hover:bg-primary-hover lg:inline-flex"
               >
                 <span className="!text-white">{t("common.contactUs")}</span>
@@ -197,7 +169,7 @@ export function PublicHeader({ locale }) {
 
               <button
                 type="button"
-                onClick={openMobileMenu}
+                onClick={() => setMobileOpen(true)}
                 className="inline-flex size-11 items-center justify-center rounded-md border border-border bg-surface text-foreground transition hover:border-primary hover:text-primary xl:hidden"
                 aria-label={t("common.openMenu")}
                 aria-expanded={mobileOpen}
@@ -210,129 +182,13 @@ export function PublicHeader({ locale }) {
         </div>
       </header>
 
-      <button
-        type="button"
-        aria-label={t("common.closeMenu")}
-        tabIndex={mobileOpen ? 0 : -1}
-        onClick={closeMobileMenu}
-        className={`fixed inset-0 z-[60] bg-[#07111b]/65 backdrop-blur-sm transition-opacity xl:hidden ${
-          mobileOpen
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0"
-        }`}
+      <PublicMobileNavigation
+        locale={currentLocale}
+        items={navigationItems}
+        contact={contact}
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
       />
-
-      <aside
-        id="public-mobile-navigation"
-        aria-hidden={!mobileOpen}
-        className={`fixed inset-y-0 right-0 z-[70] flex w-[min(88vw,390px)] flex-col border-l border-border bg-background shadow-2xl transition-transform duration-300 xl:hidden ${
-          mobileOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="flex h-[74px] items-center justify-between border-b border-border px-5">
-          <Link
-            href={`/${locale}`}
-            onClick={closeMobileMenu}
-            aria-label="HCS Thailand"
-          >
-            <Image
-              src="/images/brand/hcs-logo-primary.png"
-              alt="HCS Thailand"
-              width={120}
-              height={45}
-              className="h-auto w-[108px] object-contain dark:hidden"
-            />
-
-            <Image
-              src="/images/brand/hcs-logo-white.png"
-              alt="HCS Thailand"
-              width={120}
-              height={45}
-              className="hidden h-auto w-[108px] object-contain dark:block"
-            />
-          </Link>
-
-          <button
-            type="button"
-            onClick={closeMobileMenu}
-            className="inline-flex size-11 items-center justify-center rounded-full border border-border bg-surface text-foreground transition hover:border-primary hover:text-primary"
-            aria-label={t("common.closeMenu")}
-          >
-            <FiX aria-hidden="true" className="size-5" />
-          </button>
-        </div>
-
-        <nav
-          aria-label="Mobile navigation"
-          className="flex-1 overflow-y-auto px-5 py-6"
-        >
-          <ul className="space-y-1">
-            {siteConfig.navigation.map((item) => {
-              const href = item.href ? `/${locale}${item.href}` : `/${locale}`;
-
-              const active = isNavigationActive(pathname, item.href, locale);
-
-              return (
-                <li key={item.key}>
-                  <Link
-                    href={href}
-                    onClick={closeMobileMenu}
-                    className={`flex min-h-12 items-center justify-between rounded-lg px-4 py-3 text-base font-semibold transition ${
-                      active
-                        ? "bg-primary text-primary-foreground"
-                        : "text-foreground hover:bg-muted hover:text-primary"
-                    }`}
-                  >
-                    <span>{t(`navigation.${item.key}`)}</span>
-
-                    <FiArrowRight aria-hidden="true" />
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        <div className="border-t border-border p-5">
-          <div className="mb-4 flex items-center gap-2">
-            <LanguageSwitcher locale={locale} />
-
-            <ThemeToggle />
-          </div>
-
-          <Link
-            href={`/${locale}/contact`}
-            onClick={closeMobileMenu}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-primary px-5 text-base font-bold !text-white transition hover:bg-primary-hover"
-          >
-            <span className="!text-white">{t("common.contactUs")}</span>
-
-            <FiArrowRight aria-hidden="true" className="text-white" />
-          </Link>
-
-          <div className="mt-5 space-y-3 text-sm text-muted-foreground">
-            <a
-              href={siteConfig.contact.phoneHref}
-              className="flex items-center gap-3 transition hover:text-primary"
-            >
-              <FiPhone aria-hidden="true" />
-
-              <span>{siteConfig.contact.phoneDisplay}</span>
-            </a>
-
-            <a
-              href={siteConfig.contact.emailHref}
-              className="flex items-center gap-3 break-all transition hover:text-primary"
-            >
-              <FiMail aria-hidden="true" />
-
-              <span>{siteConfig.contact.email}</span>
-            </a>
-          </div>
-        </div>
-      </aside>
     </>
   );
 }
-
-

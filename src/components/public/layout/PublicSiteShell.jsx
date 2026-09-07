@@ -1,7 +1,7 @@
 import { PublicFooter } from "@/components/public/layout/PublicFooter";
 import { PublicHeader } from "@/components/public/layout/PublicHeader";
 
-export function PublicSiteShell({ locale, children }) {
+export function PublicSiteShell({ locale, settings, children }) {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <a
@@ -11,13 +11,13 @@ export function PublicSiteShell({ locale, children }) {
         Skip to content
       </a>
 
-      <PublicHeader locale={locale} />
+      <PublicHeader locale={locale} settings={settings} />
 
       <main id="main-content" className="flex-1">
         {children}
       </main>
 
-      <PublicFooter locale={locale} />
+      <PublicFooter locale={locale} settings={settings} />
     </div>
   );
 }

@@ -6,9 +6,13 @@ export const siteConfig = {
 
   contact: {
     phoneDisplay: "+66 2 038 9650",
+
     phoneHref: "tel:+6620389650",
+
     email: "info@hcsthailand.com",
+
     emailHref: "mailto:info@hcsthailand.com",
+
     location: "Bangkok, Thailand",
   },
 
@@ -36,10 +40,6 @@ export const siteConfig = {
     {
       key: "standards",
       href: "/standards",
-    },
-    {
-      key: "downloads",
-      href: "/downloads",
     },
     {
       key: "contact",

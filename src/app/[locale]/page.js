@@ -7,6 +7,7 @@ import SolutionsSection from "@/components/public/home/SolutionsSection";
 import { StandardsSection } from "@/components/public/home/StandardsSection";
 
 import { getPublicHomeCategories } from "@/services/categories/category-query.service";
+import { getPublicHomeHeroes } from "@/services/home/home-hero-query.service";
 import { getPublicHomeProducts } from "@/services/products/product-query.service";
 import { getPublicHomeProjects } from "@/services/projects/project-query.service";
 import { getPublicHomeSolutions } from "@/services/solutions/solution-query.service";
@@ -30,18 +31,29 @@ function normalizeResult(result) {
 
 async function loadHomePageData() {
   const [
+    heroesResult,
     categoriesResult,
     productsResult,
     solutionsResult,
     standardsResult,
     projectsResult,
   ] = await Promise.allSettled([
+    getPublicHomeHeroes(),
+
     getPublicHomeCategories(),
+
     getPublicHomeProducts(),
+
     getPublicHomeSolutions(),
+
     getPublicHomeStandards(),
+
     getPublicHomeProjects(),
   ]);
+
+  if (heroesResult.status === "rejected") {
+    console.error("Unable to load public Home Heroes:", heroesResult.reason);
+  }
 
   if (categoriesResult.status === "rejected") {
     console.error(
@@ -79,6 +91,11 @@ async function loadHomePageData() {
   }
 
   return {
+    heroes:
+      heroesResult.status === "fulfilled"
+        ? normalizeResult(heroesResult.value)
+        : [],
+
     categories:
       categoriesResult.status === "fulfilled"
         ? normalizeResult(categoriesResult.value)
@@ -109,12 +126,12 @@ async function loadHomePageData() {
 export default async function PublicHomePage({ params }) {
   const { locale } = await params;
 
-  const { categories, products, solutions, standards, projects } =
+  const { heroes, categories, products, solutions, standards, projects } =
     await loadHomePageData();
 
   return (
     <>
-      <HeroSection locale={locale} />
+      <HeroSection locale={locale} slides={heroes} />
 
       <ProductCategoriesSection locale={locale} categories={categories} />
 

@@ -12,11 +12,13 @@ import { getPublicSiteSettings } from "@/services/site-settings/public-site-sett
 const localeMetadata = {
   en: {
     openGraphLocale: "en_US",
+
     alternateOpenGraphLocale: "th_TH",
   },
 
   th: {
     openGraphLocale: "th_TH",
+
     alternateOpenGraphLocale: "en_US",
   },
 };
@@ -35,6 +37,7 @@ function createSocialImage(imagePath, siteName) {
   return [
     {
       url: imagePath,
+
       alt: siteName,
     },
   ];
@@ -87,6 +90,7 @@ export async function generateMetadata({ params }) {
     },
 
     description: seo.description,
+
     keywords: seo.keywords,
 
     applicationName: siteName,
@@ -96,20 +100,27 @@ export async function generateMetadata({ params }) {
 
       languages: {
         en: "/en",
+
         th: "/th",
+
         "x-default": "/en",
       },
     },
 
     robots: {
       index: settings.seo.indexable,
+
       follow: settings.seo.indexable,
 
       googleBot: {
         index: settings.seo.indexable,
+
         follow: settings.seo.indexable,
+
         "max-image-preview": "large",
+
         "max-snippet": -1,
+
         "max-video-preview": -1,
       },
     },
@@ -118,12 +129,19 @@ export async function generateMetadata({ params }) {
 
     openGraph: {
       type: "website",
+
       siteName,
+
       title: seo.title,
+
       description: seo.description,
+
       url: canonicalPath,
+
       locale: localeConfig.openGraphLocale,
+
       alternateLocale: localeConfig.alternateOpenGraphLocale,
+
       ...(socialImages
         ? {
             images: socialImages,
@@ -133,8 +151,11 @@ export async function generateMetadata({ params }) {
 
     twitter: {
       card: "summary_large_image",
+
       title: seo.title,
+
       description: seo.description,
+
       ...(socialImages
         ? {
             images: socialImages.map((image) => image.url),
@@ -151,11 +172,15 @@ export default async function LocaleLayout({ children, params }) {
     notFound();
   }
 
+  const settings = await getPublicSiteSettings();
+
   return (
     <>
       <HtmlLangSync locale={locale} />
 
-      <PublicSiteShell locale={locale}>{children}</PublicSiteShell>
+      <PublicSiteShell locale={locale} settings={settings}>
+        {children}
+      </PublicSiteShell>
     </>
   );
 }
