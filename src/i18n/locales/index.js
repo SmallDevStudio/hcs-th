@@ -4,6 +4,9 @@ import publicTh from "@/i18n/locales/public/th";
 import publicAboutEn from "@/i18n/locales/public/about/en";
 import publicAboutTh from "@/i18n/locales/public/about/th";
 
+import publicContactEn from "@/i18n/locales/public/contact/en";
+import publicContactTh from "@/i18n/locales/public/contact/th";
+
 import publicProductsEn from "@/i18n/locales/public/products/en";
 import publicProductsTh from "@/i18n/locales/public/products/th";
 
@@ -58,6 +61,7 @@ export const i18nResources = {
       ...publicEn,
 
       about: publicAboutEn,
+      contact: publicContactEn,
       products: publicProductsEn,
       solutions: publicSolutionsEn,
       projects: publicProjectsEn,
@@ -86,6 +90,7 @@ export const i18nResources = {
       ...publicTh,
 
       about: publicAboutTh,
+      contact: publicContactTh,
       products: publicProductsTh,
       solutions: publicSolutionsTh,
       projects: publicProjectsTh,
