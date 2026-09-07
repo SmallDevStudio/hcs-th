@@ -4,126 +4,139 @@ import { LuConciergeBell } from "react-icons/lu";
 import {
   TbArrowRight,
   TbBriefcase,
+  TbBuildingCommunity,
+  TbBuildingFactory2,
+  TbBuildingHospital,
+  TbBuildingSkyscraper,
+  TbBuildingStore,
+  TbHome,
   TbPlane,
-  TbSquareRoundedPlus,
+  TbSchool,
+  TbWorld,
 } from "react-icons/tb";
 
 const contentByLocale = {
   en: {
     eyebrow: "Project References",
+
     title: "Built on Trust. Delivered with Pride.",
+
     viewAll: "View All Projects",
     viewProject: "View project",
+
     imageAlt: "{{project}} project reference",
+
+    noImage: "No project image",
   },
 
   th: {
-    eyebrow: "โครงการอ้างอิง",
+    eyebrow: "ผลงานโครงการอ้างอิง",
+
     title: "สร้างจากความไว้วางใจ ส่งมอบด้วยความภาคภูมิใจ",
+
     viewAll: "ดูโครงการทั้งหมด",
     viewProject: "ดูโครงการ",
+
     imageAlt: "โครงการอ้างอิง {{project}}",
+
+    noImage: "ไม่มีรูปโครงการ",
   },
 };
 
 const projectIcons = {
   hospitality: LuConciergeBell,
-  healthcare: TbSquareRoundedPlus,
+  healthcare: TbBuildingHospital,
   commercial: TbBriefcase,
+  industrial: TbBuildingFactory2,
+  residential: TbHome,
+  education: TbSchool,
+  government: TbBuildingCommunity,
+  retail: TbBuildingStore,
+  transportation: TbPlane,
   airport: TbPlane,
+  "mixed-use": TbBuildingSkyscraper,
+  other: TbWorld,
 };
 
-const DEFAULT_PROJECTS = [
-  {
-    id: "luxury-hotel-bangkok",
-    slug: "luxury-hotel-bangkok",
-    type: "hospitality",
-    title: {
-      en: "Luxury Hotel, Bangkok",
-      th: "โรงแรมหรู กรุงเทพฯ",
-    },
-    image: "/images/home/projects/project-luxury-hotel-bangkok.jpg",
-    imageAlt: {
-      en: "Luxury hotel entrance in Bangkok",
-      th: "ทางเข้าโรงแรมหรูในกรุงเทพฯ",
-    },
-    order: 1,
-    isPublished: true,
-  },
-  {
-    id: "private-hospital-chiang-mai",
-    slug: "private-hospital-chiang-mai",
-    type: "healthcare",
-    title: {
-      en: "Private Hospital, Chiang Mai",
-      th: "โรงพยาบาลเอกชน เชียงใหม่",
-    },
-    image: "/images/home/projects/project-private-hospital-chiang-mai.jpg",
-    imageAlt: {
-      en: "Modern private hospital in Chiang Mai",
-      th: "โรงพยาบาลเอกชนสมัยใหม่ในเชียงใหม่",
-    },
-    order: 2,
-    isPublished: true,
-  },
-  {
-    id: "office-tower-singapore",
-    slug: "office-tower-singapore",
-    type: "commercial",
-    title: {
-      en: "Office Tower, Singapore",
-      th: "อาคารสำนักงาน สิงคโปร์",
-    },
-    image: "/images/home/projects/project-office-tower-singapore.jpg",
-    imageAlt: {
-      en: "Modern office tower entrance in Singapore",
-      th: "ทางเข้าอาคารสำนักงานสมัยใหม่ในสิงคโปร์",
-    },
-    order: 3,
-    isPublished: true,
-  },
-  {
-    id: "airport-terminal-phuket",
-    slug: "airport-terminal-phuket",
-    type: "airport",
-    title: {
-      en: "Airport Terminal, Phuket",
-      th: "อาคารผู้โดยสารสนามบิน ภูเก็ต",
-    },
-    image: "/images/home/projects/project-airport-terminal-phuket.jpg",
-    imageAlt: {
-      en: "Modern airport terminal in Phuket",
-      th: "อาคารผู้โดยสารสนามบินสมัยใหม่ในภูเก็ต",
-    },
-    order: 4,
-    isPublished: true,
-  },
-];
+function getLocalizedValue(value, locale, fallback = "") {
+  if (typeof value === "string") {
+    return value || fallback;
+  }
 
-function ProjectCard({ project, locale, content }) {
-  const Icon = projectIcons[project.type] || TbBriefcase;
+  return value?.[locale] || value?.en || value?.th || fallback;
+}
 
-  const title = project.title?.[locale] || project.title?.en || "";
+function getProjectImage(project) {
+  if (project.coverImage?.publicUrl) {
+    return project.coverImage;
+  }
 
-  const imageAlt =
-    project.imageAlt?.[locale] ||
-    project.imageAlt?.en ||
-    content.imageAlt.replace("{{project}}", title);
+  if (project.primaryImage?.publicUrl) {
+    return project.primaryImage;
+  }
+
+  if (project.image?.publicUrl) {
+    return project.image;
+  }
+
+  if (typeof project.image === "string") {
+    return {
+      publicUrl: project.image,
+      altText: project.imageAlt,
+    };
+  }
+
+  return null;
+}
+
+function ProjectCard({ project, locale, content, priority = false }) {
+  const buildingType = project.buildingType || project.type || "other";
+
+  const Icon = projectIcons[buildingType] || TbBriefcase;
+
+  const title = getLocalizedValue(
+    project.name || project.title,
+    locale,
+    project.slug,
+  );
+
+  const location = getLocalizedValue(project.location, locale);
+
+  const projectImage = getProjectImage(project);
+
+  const imageAlt = getLocalizedValue(
+    projectImage?.altText,
+    locale,
+    content.imageAlt.replace("{{project}}", title),
+  );
 
   return (
     <article className="group relative aspect-[16/9] overflow-hidden rounded-md bg-[#071b2d] shadow-sm">
-      <Image
-        src={project.image}
-        alt={imageAlt}
-        fill
-        quality={86}
-        sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
-        className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.035]"
-      />
+      {projectImage?.publicUrl ? (
+        <Image
+          src={projectImage.publicUrl}
+          alt={imageAlt}
+          fill
+          priority={priority}
+          unoptimized
+          sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw"
+          className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.045]"
+        />
+      ) : (
+        <div className="flex h-full items-center justify-center px-6 text-center text-xs font-semibold text-white/60">
+          {content.noImage}
+        </div>
+      )}
 
-      <div className="absolute inset-0 bg-gradient-to-t from-[#061522]/95 via-[#061522]/18 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#041522]/95 via-[#041522]/28 to-transparent" />
 
       <div className="absolute inset-0 bg-primary/0 transition-colors duration-300 group-hover:bg-primary/10" />
+
+      {project.featured ? (
+        <span className="absolute left-4 top-4 rounded bg-primary px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[0.07em] !text-white shadow-sm">
+          {locale === "th" ? "โครงการแนะนำ" : "Featured Project"}
+        </span>
+      ) : null}
 
       <Link
         href={`/${locale}/projects/${project.slug}`}
@@ -143,9 +156,17 @@ function ProjectCard({ project, locale, content }) {
             className="size-7 shrink-0"
           />
 
-          <h3 className="truncate text-sm font-bold leading-5 text-white">
-            {title}
-          </h3>
+          <div className="min-w-0">
+            <h3 className="truncate text-sm font-bold leading-5 text-white">
+              {title}
+            </h3>
+
+            {location ? (
+              <p className="mt-0.5 truncate text-[10px] font-medium text-white/75">
+                {location}
+              </p>
+            ) : null}
+          </div>
         </div>
 
         <TbArrowRight
@@ -160,18 +181,33 @@ function ProjectCard({ project, locale, content }) {
   );
 }
 
-export function ProjectReferencesSection({
-  locale = "en",
-  items = DEFAULT_PROJECTS,
-}) {
+export function ProjectReferencesSection({ locale = "en", projects = [] }) {
   const currentLocale = locale === "th" ? "th" : "en";
+
   const content = contentByLocale[currentLocale];
 
-  const visibleProjects = [...items]
-    .filter((project) => project.isPublished !== false)
+  const visibleProjects = (Array.isArray(projects) ? projects : [])
+    .filter(
+      (project) =>
+        project &&
+        project.status === "published" &&
+        project.showOnHome === true,
+    )
     .sort((firstProject, secondProject) => {
-      return (firstProject.order ?? 0) - (secondProject.order ?? 0);
-    });
+      if (firstProject.featured !== secondProject.featured) {
+        return firstProject.featured ? -1 : 1;
+      }
+
+      return (
+        Number(firstProject.sortOrder || 0) -
+        Number(secondProject.sortOrder || 0)
+      );
+    })
+    .slice(0, 4);
+
+  if (!visibleProjects.length) {
+    return null;
+  }
 
   return (
     <section className="overflow-hidden bg-background py-10 sm:py-12 lg:py-14">
@@ -202,12 +238,13 @@ export function ProjectReferencesSection({
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
-          {visibleProjects.map((project) => (
+          {visibleProjects.map((project, index) => (
             <ProjectCard
               key={project.id || project.slug}
               project={project}
               locale={currentLocale}
               content={content}
+              priority={index === 0}
             />
           ))}
         </div>

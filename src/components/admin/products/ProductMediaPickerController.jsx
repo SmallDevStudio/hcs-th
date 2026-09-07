@@ -94,6 +94,8 @@ function createPickerLabels({ t, type, multiple }) {
 export function ProductMediaPickerController({
   type = "image",
 
+  folder = MEDIA_FOLDERS.PRODUCTS,
+
   selectedIds = [],
 
   selectedAssets = [],
@@ -129,7 +131,7 @@ export function ProductMediaPickerController({
         const result = await getMediaAssets({
           limit: 24,
           type,
-          folder: MEDIA_FOLDERS.PRODUCTS,
+          folder,
           usage: "all",
           signal: abortController.signal,
         });
@@ -160,7 +162,7 @@ export function ProductMediaPickerController({
     return () => {
       abortController.abort();
     };
-  }, [t, type]);
+  }, [folder, t, type]);
 
   async function requestAssets({ search = "", cursor, append = false } = {}) {
     setLoading(true);
@@ -170,7 +172,7 @@ export function ProductMediaPickerController({
         limit: 24,
         cursor,
         type,
-        folder: MEDIA_FOLDERS.PRODUCTS,
+        folder: folder,
         search: search || undefined,
         usage: "all",
       });
@@ -242,7 +244,7 @@ export function ProductMediaPickerController({
       })}
       upload={{
         mediaType: type,
-        defaultFolder: MEDIA_FOLDERS.PRODUCTS,
+        defaultFolder: folder,
         lockFolder: true,
       }}
       onSearch={handleSearch}

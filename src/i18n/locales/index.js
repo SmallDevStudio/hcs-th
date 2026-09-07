@@ -37,6 +37,12 @@ import trashTh from "@/i18n/locales/admin/trash/th";
 import publicSolutionsEn from "@/i18n/locales/public/solutions/en";
 import publicSolutionsTh from "@/i18n/locales/public/solutions/th";
 
+import projectsEn from "@/i18n/locales/admin/projects/en";
+import projectsTh from "@/i18n/locales/admin/projects/th";
+
+import publicProjectsEn from "@/i18n/locales/public/projects/en";
+import publicProjectsTh from "@/i18n/locales/public/projects/th";
+
 export const i18nResources = {
   en: {
     public: {
@@ -44,6 +50,7 @@ export const i18nResources = {
 
       products: publicProductsEn,
       solutions: publicSolutionsEn,
+      projects: publicProjectsEn,
     },
 
     admin: {
@@ -66,6 +73,8 @@ export const i18nResources = {
       siteSettings: siteSettingsEn,
 
       trash: trashEn,
+
+      projects: projectsEn,
     },
   },
 
@@ -75,6 +84,7 @@ export const i18nResources = {
 
       products: publicProductsTh,
       solutions: publicSolutionsTh,
+      projects: publicProjectsTh,
     },
 
     admin: {
@@ -97,6 +107,8 @@ export const i18nResources = {
       siteSettings: siteSettingsTh,
 
       trash: trashTh,
+
+      projects: projectsTh,
     },
   },
 };

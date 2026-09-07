@@ -5,16 +5,35 @@ import { ProductCategoriesSection } from "@/components/public/home/ProductCatego
 import { ProjectReferencesSection } from "@/components/public/home/ProjectReferencesSection";
 import SolutionsSection from "@/components/public/home/SolutionsSection";
 import { StandardsSection } from "@/components/public/home/StandardsSection";
+
 import { getPublicHomeCategories } from "@/services/categories/category-query.service";
 import { getPublicHomeProducts } from "@/services/products/product-query.service";
+import { getPublicHomeProjects } from "@/services/projects/project-query.service";
 import { getPublicHomeSolutions } from "@/services/solutions/solution-query.service";
 
+function normalizeResult(result) {
+  if (Array.isArray(result)) {
+    return result;
+  }
+
+  if (Array.isArray(result?.items)) {
+    return result.items;
+  }
+
+  if (Array.isArray(result?.data)) {
+    return result.data;
+  }
+
+  return [];
+}
+
 async function loadHomePageData() {
-  const [categoriesResult, productsResult, solutionsResult] =
+  const [categoriesResult, productsResult, solutionsResult, projectsResult] =
     await Promise.allSettled([
       getPublicHomeCategories(),
       getPublicHomeProducts(),
       getPublicHomeSolutions(),
+      getPublicHomeProjects(),
     ]);
 
   if (categoriesResult.status === "rejected") {
@@ -38,21 +57,41 @@ async function loadHomePageData() {
     );
   }
 
+  if (projectsResult.status === "rejected") {
+    console.error(
+      "Unable to load public home projects:",
+      projectsResult.reason,
+    );
+  }
+
   return {
     categories:
-      categoriesResult.status === "fulfilled" ? categoriesResult.value : [],
+      categoriesResult.status === "fulfilled"
+        ? normalizeResult(categoriesResult.value)
+        : [],
 
-    products: productsResult.status === "fulfilled" ? productsResult.value : [],
+    products:
+      productsResult.status === "fulfilled"
+        ? normalizeResult(productsResult.value)
+        : [],
 
     solutions:
-      solutionsResult.status === "fulfilled" ? solutionsResult.value : [],
+      solutionsResult.status === "fulfilled"
+        ? normalizeResult(solutionsResult.value)
+        : [],
+
+    projects:
+      projectsResult.status === "fulfilled"
+        ? normalizeResult(projectsResult.value)
+        : [],
   };
 }
 
 export default async function PublicHomePage({ params }) {
   const { locale } = await params;
 
-  const { categories, products, solutions } = await loadHomePageData();
+  const { categories, products, solutions, projects } =
+    await loadHomePageData();
 
   return (
     <>
@@ -68,7 +107,7 @@ export default async function PublicHomePage({ params }) {
 
       <StandardsSection locale={locale} />
 
-      <ProjectReferencesSection locale={locale} />
+      <ProjectReferencesSection locale={locale} projects={projects} />
     </>
   );
 }

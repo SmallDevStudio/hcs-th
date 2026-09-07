@@ -23,6 +23,11 @@ import {
   prepareProductRelationshipRestore,
 } from "@/services/products/product-relationships.service";
 
+import {
+  prepareProjectRelationshipRelease,
+  prepareProjectRelationshipRestore,
+} from "@/services/projects/project-relationships.service";
+
 const IMAGE_USAGE_ENTITY_TYPES = new Set([
   AUDIT_ENTITY_TYPES.CATEGORY || "category",
 
@@ -30,6 +35,8 @@ const IMAGE_USAGE_ENTITY_TYPES = new Set([
 ]);
 
 const PRODUCT_ENTITY_TYPE = AUDIT_ENTITY_TYPES.PRODUCT || "product";
+
+const PROJECT_ENTITY_TYPE = AUDIT_ENTITY_TYPES.PROJECT || "project";
 
 function serializeFirestoreValue(value) {
   if (value === null || value === undefined) {
@@ -158,6 +165,28 @@ function getProductRelationshipMetadata(data = {}) {
   };
 }
 
+function getProjectRelationshipMetadata(data = {}) {
+  if (!data) {
+    return null;
+  }
+
+  return {
+    coverImageMediaId: data.coverImageMediaId || null,
+
+    galleryMediaIds: Array.isArray(data.galleryMediaIds)
+      ? data.galleryMediaIds
+      : [],
+
+    relatedProductIds: Array.isArray(data.relatedProductIds)
+      ? data.relatedProductIds
+      : [],
+
+    relatedSolutionIds: Array.isArray(data.relatedSolutionIds)
+      ? data.relatedSolutionIds
+      : [],
+  };
+}
+
 async function prepareImageUsageRelease({
   transaction,
   entityType,
@@ -257,6 +286,22 @@ async function prepareEntityRelationshipRelease({
     };
   }
 
+  if (entityType === PROJECT_ENTITY_TYPE) {
+    const transition = await prepareProjectRelationshipRelease({
+      transaction,
+
+      projectId: entityId,
+      projectData: sourceData,
+
+      actor,
+    });
+
+    return {
+      type: "project",
+      transition,
+    };
+  }
+
   const transition = await prepareImageUsageRelease({
     transaction,
     entityType,
@@ -310,6 +355,38 @@ async function prepareEntityRelationshipRestore({
     }
   }
 
+  if (entityType === PROJECT_ENTITY_TYPE) {
+    try {
+      const transition = await prepareProjectRelationshipRestore({
+        transaction,
+
+        projectId: entityId,
+        projectData: originalData,
+
+        actor,
+      });
+
+      return {
+        type: "project",
+        transition,
+      };
+    } catch (error) {
+      if (
+        error instanceof NotFoundError ||
+        error instanceof InvalidRequestError
+      ) {
+        throw new ConflictError(
+          "This project cannot be restored because one or more media files are no longer available. Restore the related media first.",
+          {
+            relationships: getProjectRelationshipMetadata(originalData),
+          },
+        );
+      }
+
+      throw error;
+    }
+  }
+
   const transition = await prepareImageUsageRestore({
     transaction,
     entityType,
@@ -326,24 +403,38 @@ async function prepareEntityRelationshipRestore({
 
 function createRestoredData({ entityType, originalData, relationship }) {
   if (
-    entityType !== PRODUCT_ENTITY_TYPE ||
-    relationship?.type !== "product" ||
-    !relationship.transition
+    entityType === PRODUCT_ENTITY_TYPE &&
+    relationship?.type === "product" &&
+    relationship.transition
   ) {
-    return originalData;
+    return {
+      ...originalData,
+
+      category: relationship.transition.category,
+
+      primaryImage: relationship.transition.primaryImage,
+
+      gallery: relationship.transition.gallery,
+
+      documents: relationship.transition.documents,
+    };
   }
 
-  return {
-    ...originalData,
+  if (
+    entityType === PROJECT_ENTITY_TYPE &&
+    relationship?.type === "project" &&
+    relationship.transition
+  ) {
+    return {
+      ...originalData,
 
-    category: relationship.transition.category,
+      coverImage: relationship.transition.coverImage,
 
-    primaryImage: relationship.transition.primaryImage,
+      gallery: relationship.transition.gallery,
+    };
+  }
 
-    gallery: relationship.transition.gallery,
-
-    documents: relationship.transition.documents,
-  };
+  return originalData;
 }
 
 async function markPermanentDeletionStarted({ trashReference, actor }) {
@@ -548,10 +639,20 @@ export async function softDeleteEntity({
             ? getProductRelationshipMetadata(sourceData)
             : null,
 
+        projectRelationships:
+          trashData.entityType === PROJECT_ENTITY_TYPE
+            ? getProjectRelationshipMetadata(restoredOriginalData)
+            : null,
+
         relationshipType: relationship.type || null,
 
         relationshipsReleased: Boolean(relationship.transition),
       },
+
+      projectRelationships:
+        entityType === PROJECT_ENTITY_TYPE
+          ? getProjectRelationshipMetadata(sourceData)
+          : null,
 
       transaction,
     });
