@@ -13,6 +13,7 @@ import {
   FiSave,
   FiSearch,
   FiShare2,
+  FiBell,
 } from "react-icons/fi";
 import { toast } from "sonner";
 
@@ -23,6 +24,8 @@ import { AdminSettingsSection } from "@/components/admin/form/AdminSettingsSecti
 import { LocalizedFieldGroup } from "@/components/admin/form/LocalizedFieldGroup";
 import { siteSettingsSchema } from "@/modules/site-settings/site-settings.schema";
 import { apiClient } from "@/services/http/axios";
+
+import { NotificationSettingsTab } from "@/components/admin/site-settings/NotificationSettingsTab";
 
 const TABS = [
   {
@@ -49,6 +52,11 @@ const TABS = [
     key: "integrations",
     labelKey: "siteSettings.tabs.integrations",
     icon: FiLink,
+  },
+  {
+    key: "notifications",
+    labelKey: "siteSettings.tabs.notifications",
+    icon: FiBell,
   },
 ];
 
@@ -90,6 +98,31 @@ function settingsToFormValues(settings) {
 
     integrations: {
       ...settings.integrations,
+    },
+    notifications: {
+      channels: {
+        ...settings.notifications.channels,
+      },
+
+      email: {
+        ...settings.notifications.email,
+
+        smtpPassword: "",
+
+        recipients: Array.isArray(settings.notifications.email.recipients)
+          ? settings.notifications.email.recipients.join("\n")
+          : settings.notifications.email.recipients || "",
+      },
+
+      line: {
+        ...settings.notifications.line,
+
+        channelAccessToken: "",
+
+        targetIds: Array.isArray(settings.notifications.line.targetIds)
+          ? settings.notifications.line.targetIds.join("\n")
+          : settings.notifications.line.targetIds || "",
+      },
     },
   };
 }
@@ -697,6 +730,12 @@ export function SiteSettingsForm({ initialSettings }) {
 
         {activeTab === "integrations" ? (
           <IntegrationsTab control={control} />
+        ) : null}
+        {activeTab === "notifications" ? (
+          <NotificationSettingsTab
+            control={control}
+            hasUnsavedChanges={isDirty}
+          />
         ) : null}
       </div>
     </form>

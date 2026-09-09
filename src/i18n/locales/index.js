@@ -58,6 +58,9 @@ import contactTh from "@/i18n/locales/public/contact/th";
 import aboutEn from "@/i18n/locales/public/about/en";
 import aboutTh from "@/i18n/locales/public/about/th";
 
+import messagesEn from "@/i18n/locales/admin/messages/en";
+import messagesTh from "@/i18n/locales/admin/messages/th";
+
 export const i18nResources = {
   en: {
     public: {
@@ -85,6 +88,7 @@ export const i18nResources = {
       standards: standardsEn,
       siteSettings: siteSettingsEn,
       trash: trashEn,
+      messages: messagesEn,
     },
   },
 
@@ -114,6 +118,7 @@ export const i18nResources = {
       standards: standardsTh,
       siteSettings: siteSettingsTh,
       trash: trashTh,
+      messages: messagesTh,
     },
   },
 };

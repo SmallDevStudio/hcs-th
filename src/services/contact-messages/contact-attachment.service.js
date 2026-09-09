@@ -11,7 +11,7 @@ const CONTACT_ATTACHMENT_MAX_BYTES = 10 * 1024 * 1024;
 
 const CONTACT_ATTACHMENT_EXPIRATION_MINUTES = 15;
 
-const CONTACT_ATTACHMENT_ROOT = "contact-attachments";
+export const CONTACT_ATTACHMENT_ROOT = "contact-attachments";
 
 const CONTACT_ATTACHMENT_MIME_TYPES = Object.freeze({
   "application/pdf": "pdf",
@@ -262,5 +262,47 @@ export async function verifyContactAttachment(uploadToken) {
     storagePath: payload.storagePath,
     mimeType: payload.mimeType,
     size: actualSize,
+  };
+}
+
+export async function createContactAttachmentDownload({
+  storagePath,
+  originalName,
+}) {
+  if (
+    typeof storagePath !== "string" ||
+    !storagePath.startsWith(`${CONTACT_ATTACHMENT_ROOT}/`)
+  ) {
+    throw new InvalidRequestError("Invalid contact attachment path");
+  }
+
+  const file = adminBucket.file(storagePath);
+
+  const [exists] = await file.exists();
+
+  if (!exists) {
+    throw new InvalidRequestError("Contact attachment was not found");
+  }
+
+  const safeFileName = sanitizeOriginalName(originalName) || "attachment";
+
+  const expiresAt = Date.now() + 5 * 60 * 1000;
+
+  const [downloadUrl] = await file.getSignedUrl({
+    version: "v4",
+    action: "read",
+
+    expires: new Date(expiresAt),
+
+    responseDisposition: `attachment; filename="${safeFileName.replace(
+      /["\r\n]/g,
+      "",
+    )}"`,
+  });
+
+  return {
+    downloadUrl,
+
+    expiresAt: new Date(expiresAt).toISOString(),
   };
 }

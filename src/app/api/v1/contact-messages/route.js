@@ -1,4 +1,8 @@
-import { apiCreated, withApiHandler } from "@/lib/api/response";
+import { apiCreated, apiSuccess, withApiHandler } from "@/lib/api/response";
+import { ADMIN_PERMISSIONS } from "@/constants/admin";
+import { requirePermission } from "@/lib/auth/current-admin";
+import { contactMessageQuerySchema } from "@/modules/contact-messages/contact-message.schema";
+import { getContactMessages } from "@/services/contact-messages/contact-message-query.service";
 import { createContactMessage } from "@/services/contact-messages/contact-message.service";
 
 export const runtime = "nodejs";
@@ -16,6 +20,41 @@ function getRequestIpAddress(request) {
     request.headers.get("x-vercel-forwarded-for") ||
     ""
   );
+}
+
+export async function GET(request) {
+  return withApiHandler(async () => {
+    await requirePermission(ADMIN_PERMISSIONS.MESSAGES_VIEW);
+
+    const queryValues = Object.fromEntries(
+      request.nextUrl.searchParams.entries(),
+    );
+
+    const filters = contactMessageQuerySchema.parse(queryValues);
+
+    const result = await getContactMessages({
+      limit: filters.limit,
+      cursor: filters.cursor,
+      status: filters.status || undefined,
+      search: filters.search || undefined,
+    });
+
+    return apiSuccess({
+      message: "Contact messages retrieved successfully",
+
+      data: result.items,
+
+      meta: {
+        pagination: result.pagination,
+
+        filters: {
+          status: filters.status || null,
+
+          search: filters.search || null,
+        },
+      },
+    });
+  });
 }
 
 export async function POST(request) {
@@ -38,6 +77,7 @@ export async function POST(request) {
 
     return apiCreated({
       data: message,
+
       message: "Your enquiry has been submitted successfully",
     });
   });

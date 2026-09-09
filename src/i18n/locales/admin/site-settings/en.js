@@ -2,7 +2,7 @@ const siteSettingsEn = {
   eyebrow: "Website Settings",
   title: "Site Information",
   description:
-    "Manage company information, contact channels, branding and default SEO.",
+    "Manage company information, contact channels, branding, SEO and notifications.",
 
   actions: {
     save: "Save changes",
@@ -17,6 +17,7 @@ const siteSettingsEn = {
     social: "Social Media",
     brandingSeo: "Branding & SEO",
     integrations: "Integrations",
+    notifications: "Notifications",
   },
 
   sections: {
@@ -53,6 +54,118 @@ const siteSettingsEn = {
       title: "Search Engine & Analytics",
       description:
         "Verification codes and analytics configuration for the website.",
+    },
+  },
+
+  notifications: {
+    channels: {
+      title: "Notification Channels",
+      description:
+        "Choose how administrators are notified when a new website enquiry is received.",
+
+      inApp: "In-app",
+      inAppDescription:
+        "Display new enquiries and unread status in the Admin Panel.",
+
+      email: "Email",
+      emailDescription:
+        "Send enquiry details to the configured email recipients.",
+
+      line: "LINE",
+      lineDescription: "Send enquiry alerts through the LINE Messaging API.",
+    },
+
+    email: {
+      title: "Email Notification",
+      description:
+        "Configure the SMTP server and recipients used for website enquiry notifications.",
+
+      smtpTitle: "SMTP Configuration",
+      smtpDescription: "The SMTP password is encrypted before being stored.",
+    },
+
+    line: {
+      title: "LINE Notification",
+      description:
+        "Connect a LINE Official Account and specify the users or groups that receive alerts.",
+
+      messagingApiTitle: "LINE Messaging API",
+      messagingApiDescription:
+        "Uses a LINE Official Account channel access token to send push messages.",
+    },
+
+    fields: {
+      smtpHost: "SMTP host",
+      smtpPort: "SMTP port",
+      smtpSecure: "Use secure SMTP connection",
+      smtpSecureDescription:
+        "Enable for implicit TLS, normally used with port 465.",
+
+      smtpUsername: "SMTP username",
+      smtpPassword: "SMTP password",
+
+      fromName: "Sender name",
+      fromEmail: "Sender email",
+
+      emailRecipients: "Notification recipients",
+
+      lineToken: "Channel access token",
+      lineTargets: "LINE user or group IDs",
+    },
+
+    placeholders: {
+      smtpPassword: "Enter the SMTP password",
+      lineToken: "Enter the LINE Messaging API channel access token",
+
+      secretConfigured:
+        "A secret is already configured. Leave empty to keep it unchanged.",
+
+      emailRecipients: "sales@hcsthailand.com\nsupport@hcsthailand.com",
+
+      lineTargets:
+        "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\nCxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    },
+
+    hints: {
+      secret: "Leave this field empty to keep the currently saved secret.",
+
+      multipleValues:
+        "Enter one value per line. Commas and semicolons are also supported.",
+
+      lineTargets:
+        "Enter one LINE user ID or group ID per line. The Official Account must be allowed to message each target.",
+    },
+
+    status: {
+      passwordConfigured: "SMTP password configured",
+
+      passwordMissing: "SMTP password not configured",
+
+      tokenConfigured: "LINE token configured",
+
+      tokenMissing: "LINE token not configured",
+    },
+
+    actions: {
+      testEmail: "Send test email",
+      testingEmail: "Sending test email...",
+
+      testLine: "Send test LINE",
+      testingLine: "Sending test LINE...",
+    },
+
+    messages: {
+      saveBeforeTest: "Save the notification settings before testing.",
+
+      recipientRequired: "Enter at least one notification recipient.",
+
+      emailTestSent: "Test email sent successfully to {{email}}.",
+
+      emailTestFailed: "Unable to send the test email.",
+
+      lineTestSent: "LINE test notification sent to {{count}} target(s).",
+
+      lineTestFailed: "Unable to send the LINE test notification.",
     },
   },
 
@@ -100,26 +213,39 @@ const siteSettingsEn = {
     seoKeywords: "SEO keywords",
 
     googleSiteVerification: "Google site verification",
+
     bingSiteVerification: "Bing site verification",
+
     googleAnalyticsMeasurementId: "Google Analytics measurement ID",
   },
 
   placeholders: {
     displayName: "HCS Thailand",
     legalName: "HCS (Thailand) Co., Ltd.",
+
     tagline: "Hardware & Security Solutions",
+
     description: "Describe the company and its services",
+
     registrationNumber: "Company registration number",
+
     foundedYear: "2020",
 
     phone: "+66 2 038 9650",
+
     secondaryPhone: "Additional phone number",
+
     email: "info@hcsthailand.com",
     salesEmail: "sales@hcsthailand.com",
+
     address: "Company address",
+
     googleMapsUrl: "https://maps.google.com/...",
+
     googleMapsEmbedUrl: "https://www.google.com/maps/embed?...",
+
     lineId: "@hcsthailand",
+
     businessHours: "Monday – Friday, 08:30 – 17:30",
 
     socialUrl: "https://...",
@@ -127,23 +253,32 @@ const siteSettingsEn = {
     ogImagePath: "/images/seo/...",
 
     seoTitle: "Page title displayed by search engines",
+
     seoDescription: "Short description displayed by search engines",
+
     seoKeywords: "door hardware, door closer, security solutions",
 
     googleSiteVerification: "Google verification token",
+
     bingSiteVerification: "Bing verification token",
+
     googleAnalyticsMeasurementId: "G-XXXXXXXXXX",
   },
 
   hints: {
     localized: "Enter the content separately for English and Thai.",
+
     keywords:
       "Separate each keyword with a comma. A maximum of 30 keywords is allowed.",
+
     seoAutoFill:
       "If left empty, the system generates this value from the company name, tagline and description.",
+
     imagePath: "Enter a path from the media library or a public image path.",
+
     verification:
       "Enter only the verification token, not the complete HTML meta tag.",
+
     analytics:
       "Changes to Analytics may require a new deployment depending on the tracking configuration.",
   },
@@ -155,13 +290,17 @@ const siteSettingsEn = {
 
   validation: {
     invalidUrl: "Please enter a valid URL.",
+
     invalidEmail: "Please enter a valid email address.",
+
     invalidColor: "Please enter a valid hexadecimal color.",
+
     invalidYear: "Please enter a four-digit year.",
   },
 
   status: {
     neverUpdated: "These settings have not been saved yet.",
+
     lastUpdated: "Last updated {{date}}",
   },
 };

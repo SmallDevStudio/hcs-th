@@ -43,79 +43,227 @@ const keywordSchema = z.preprocess(
   z.array(z.string().trim().min(1).max(80)).max(30),
 );
 
+const emailRecipientSchema = z.preprocess(
+  (value) => {
+    if (Array.isArray(value)) {
+      return value;
+    }
+
+    if (typeof value === "string") {
+      return value
+        .split(/[\n,;]/)
+        .map((email) => email.trim())
+        .filter(Boolean);
+    }
+
+    return [];
+  },
+  z
+    .array(z.string().trim().email("Invalid notification email address"))
+    .max(20),
+);
+
+const lineTargetIdsSchema = z.preprocess(
+  (value) => {
+    if (Array.isArray(value)) {
+      return value;
+    }
+
+    if (typeof value === "string") {
+      return value
+        .split(/[\n,;]/)
+        .map((targetId) => targetId.trim())
+        .filter(Boolean);
+    }
+
+    return [];
+  },
+  z.array(z.string().trim().min(1).max(100)).max(20),
+);
+
 const localizedSeoSchema = z.object({
   title: z.string().trim().max(70),
   description: z.string().trim().max(180),
   keywords: keywordSchema,
 });
 
-export const siteSettingsSchema = z.object({
-  company: z.object({
-    displayName: localizedShortTextSchema,
-    legalName: localizedShortTextSchema,
-    tagline: localizedShortTextSchema,
-    description: localizedLongTextSchema,
+const notificationSettingsSchema = z
+  .object({
+    channels: z
+      .object({
+        inApp: z.boolean(),
+        email: z.boolean(),
+        line: z.boolean(),
+      })
+      .strict(),
 
-    registrationNumber: z.string().trim().max(100),
-    foundedYear: z
-      .string()
-      .trim()
-      .refine(
-        (value) => value === "" || /^\d{4}$/.test(value),
-        "Year must contain 4 digits",
-      ),
-  }),
+    email: z
+      .object({
+        smtpHost: z.string().trim().max(300),
 
-  contact: z.object({
-    phone: z.string().trim().max(50),
-    secondaryPhone: z.string().trim().max(50),
-    email: optionalEmailSchema,
-    salesEmail: optionalEmailSchema,
+        smtpPort: z.coerce.number().int().min(1).max(65535),
 
-    address: localizedAddressSchema,
+        smtpSecure: z.boolean(),
 
-    googleMapsUrl: optionalUrlSchema,
-    googleMapsEmbedUrl: optionalUrlSchema,
-    lineId: z.string().trim().max(100),
+        smtpUsername: z.string().trim().max(300),
 
-    businessHours: localizedShortTextSchema,
-  }),
+        smtpPassword: z.string().max(2000),
 
-  social: z.object({
-    facebook: optionalUrlSchema,
-    instagram: optionalUrlSchema,
-    youtube: optionalUrlSchema,
-    linkedin: optionalUrlSchema,
-    line: optionalUrlSchema,
-  }),
+        passwordConfigured: z.boolean(),
 
-  branding: z.object({
-    primaryColor: z
-      .string()
-      .trim()
-      .regex(/^#[0-9a-fA-F]{6}$/, "Invalid hexadecimal color"),
+        fromName: z.string().trim().max(200),
 
-    secondaryColor: z
-      .string()
-      .trim()
-      .regex(/^#[0-9a-fA-F]{6}$/, "Invalid hexadecimal color"),
+        fromEmail: optionalEmailSchema,
 
-    logoPrimary: z.string().trim().min(1).max(500),
-    logoWhite: z.string().trim().min(1).max(500),
-    defaultOgImage: z.string().trim().max(500),
-  }),
+        recipients: emailRecipientSchema,
+      })
+      .strict(),
 
-  seo: z.object({
-    indexable: z.boolean(),
-    en: localizedSeoSchema,
-    th: localizedSeoSchema,
-  }),
+    line: z
+      .object({
+        channelAccessToken: z.string().trim().max(5000),
 
-  integrations: z.object({
-    googleSiteVerification: z.string().trim().max(300),
-    bingSiteVerification: z.string().trim().max(300),
-    googleAnalyticsMeasurementId: z.string().trim().max(100),
-  }),
-});
+        tokenConfigured: z.boolean(),
+
+        targetIds: lineTargetIdsSchema,
+      })
+      .strict(),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    if (value.channels.email) {
+      if (!value.email.smtpHost) {
+        context.addIssue({
+          code: "custom",
+          path: ["email", "smtpHost"],
+          message: "SMTP host is required",
+        });
+      }
+
+      if (!value.email.smtpUsername) {
+        context.addIssue({
+          code: "custom",
+          path: ["email", "smtpUsername"],
+          message: "SMTP username is required",
+        });
+      }
+
+      if (!value.email.smtpPassword && !value.email.passwordConfigured) {
+        context.addIssue({
+          code: "custom",
+          path: ["email", "smtpPassword"],
+          message: "SMTP password is required",
+        });
+      }
+
+      if (!value.email.fromEmail) {
+        context.addIssue({
+          code: "custom",
+          path: ["email", "fromEmail"],
+          message: "Sender email is required",
+        });
+      }
+
+      if (!value.email.recipients.length) {
+        context.addIssue({
+          code: "custom",
+          path: ["email", "recipients"],
+          message: "At least one notification recipient is required",
+        });
+      }
+    }
+
+    if (value.channels.line) {
+      if (!value.line.channelAccessToken && !value.line.tokenConfigured) {
+        context.addIssue({
+          code: "custom",
+          path: ["line", "channelAccessToken"],
+          message: "LINE Messaging API channel access token is required",
+        });
+      }
+
+      if (!value.line.targetIds.length) {
+        context.addIssue({
+          code: "custom",
+          path: ["line", "targetIds"],
+          message: "At least one LINE user or group ID is required",
+        });
+      }
+    }
+  });
+
+export const siteSettingsSchema = z
+  .object({
+    company: z.object({
+      displayName: localizedShortTextSchema,
+      legalName: localizedShortTextSchema,
+      tagline: localizedShortTextSchema,
+      description: localizedLongTextSchema,
+
+      registrationNumber: z.string().trim().max(100),
+
+      foundedYear: z
+        .string()
+        .trim()
+        .refine(
+          (value) => value === "" || /^\d{4}$/.test(value),
+          "Year must contain 4 digits",
+        ),
+    }),
+
+    contact: z.object({
+      phone: z.string().trim().max(50),
+      secondaryPhone: z.string().trim().max(50),
+      email: optionalEmailSchema,
+      salesEmail: optionalEmailSchema,
+
+      address: localizedAddressSchema,
+
+      googleMapsUrl: optionalUrlSchema,
+      googleMapsEmbedUrl: optionalUrlSchema,
+      lineId: z.string().trim().max(100),
+
+      businessHours: localizedShortTextSchema,
+    }),
+
+    social: z.object({
+      facebook: optionalUrlSchema,
+      instagram: optionalUrlSchema,
+      youtube: optionalUrlSchema,
+      linkedin: optionalUrlSchema,
+      line: optionalUrlSchema,
+    }),
+
+    branding: z.object({
+      primaryColor: z
+        .string()
+        .trim()
+        .regex(/^#[0-9a-fA-F]{6}$/, "Invalid hexadecimal color"),
+
+      secondaryColor: z
+        .string()
+        .trim()
+        .regex(/^#[0-9a-fA-F]{6}$/, "Invalid hexadecimal color"),
+
+      logoPrimary: z.string().trim().min(1).max(500),
+      logoWhite: z.string().trim().min(1).max(500),
+      defaultOgImage: z.string().trim().max(500),
+    }),
+
+    seo: z.object({
+      indexable: z.boolean(),
+      en: localizedSeoSchema,
+      th: localizedSeoSchema,
+    }),
+
+    integrations: z.object({
+      googleSiteVerification: z.string().trim().max(300),
+      bingSiteVerification: z.string().trim().max(300),
+      googleAnalyticsMeasurementId: z.string().trim().max(100),
+    }),
+
+    notifications: notificationSettingsSchema,
+  })
+  .strict();
 
 export const updateSiteSettingsSchema = siteSettingsSchema;

@@ -23,6 +23,7 @@ const trashTh = {
 
   entities: {
     page: "หน้าเว็บไซต์",
+    homeSection: "สไลด์ Hero หน้าแรก",
     category: "หมวดหมู่",
     product: "สินค้า",
     solution: "โซลูชัน",

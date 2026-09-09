@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { FiExternalLink, FiX } from "react-icons/fi";
+import { AdminMessageBadge } from "@/components/admin/messages/AdminMessageBadge";
 
 import {
   ADMIN_NAVIGATION,
@@ -49,6 +50,8 @@ function NavigationItem({ item, pathname, onNavigate, translate }) {
       <span className="min-w-0 flex-1 truncate">
         {translate(item.labelKey)}
       </span>
+
+      {item.key === "messages" ? <AdminMessageBadge /> : null}
     </Link>
   );
 }

@@ -24,6 +24,7 @@ const trashEn = {
 
   entities: {
     page: "Page",
+    homeSection: "Home hero slide",
     category: "Category",
     product: "Product",
     solution: "Solution",

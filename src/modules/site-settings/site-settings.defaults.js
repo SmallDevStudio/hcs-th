@@ -6,7 +6,7 @@ export const DEFAULT_SITE_SETTINGS = {
     },
 
     legalName: {
-      en: "HCS (Thailand) Co., Co., Ltd.",
+      en: "HCS (Thailand) Co., Ltd.",
       th: "บริษัท เอชซีเอส (ประเทศไทย) จำกัด",
     },
 
@@ -100,5 +100,32 @@ export const DEFAULT_SITE_SETTINGS = {
     googleSiteVerification: "",
     bingSiteVerification: "",
     googleAnalyticsMeasurementId: "",
+  },
+
+  notifications: {
+    channels: {
+      inApp: true,
+      email: false,
+      line: false,
+    },
+
+    email: {
+      smtpHost: "",
+      smtpPort: 587,
+      smtpSecure: false,
+      smtpUsername: "",
+      smtpPassword: "",
+      passwordConfigured: false,
+
+      fromName: "HCS Thailand Website",
+      fromEmail: "",
+      recipients: [],
+    },
+
+    line: {
+      channelAccessToken: "",
+      tokenConfigured: false,
+      targetIds: [],
+    },
   },
 };

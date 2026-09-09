@@ -3,7 +3,6 @@ import {
   FiBookOpen,
   FiBox,
   FiBriefcase,
-  FiDownload,
   FiFileText,
   FiFolder,
   FiGrid,
@@ -106,13 +105,6 @@ export const ADMIN_NAVIGATION = [
         permission: ADMIN_PERMISSIONS.STANDARDS_VIEW,
       },
       {
-        key: "downloads",
-        labelKey: "navigation.downloads",
-        href: "/admin/downloads",
-        icon: FiDownload,
-        permission: ADMIN_PERMISSIONS.DOWNLOADS_VIEW,
-      },
-      {
         key: "media",
         labelKey: "navigation.media",
         href: "/admin/media",
@@ -123,12 +115,12 @@ export const ADMIN_NAVIGATION = [
   },
 
   {
-    key: "communication",
+    id: "communication",
     labelKey: "navigation.groups.communication",
 
     items: [
       {
-        key: "messages",
+        id: "messages",
         labelKey: "navigation.messages",
         href: "/admin/messages",
         icon: FiInbox,

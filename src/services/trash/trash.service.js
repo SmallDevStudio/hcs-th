@@ -2,7 +2,7 @@ import "server-only";
 
 import { FieldPath, FieldValue, Timestamp } from "firebase-admin/firestore";
 
-import { AUDIT_ENTITY_TYPES } from "@/constants/audit";
+import { AUDIT_ACTIONS, AUDIT_ENTITY_TYPES } from "@/constants/audit";
 import { COLLECTIONS } from "@/constants/collections";
 import { MEDIA_STORAGE_ROOT } from "@/constants/media";
 import {
@@ -33,6 +33,13 @@ import {
   prepareStandardRelationshipRestore,
 } from "@/services/standards/standard-relationships.service";
 
+import {
+  prepareHomeHeroRelationshipRelease,
+  prepareHomeHeroRelationshipRestore,
+} from "@/services/home/home-hero-relationships.service";
+
+import { CONTACT_ATTACHMENT_ROOT } from "@/services/contact-messages/contact-attachment.service";
+
 const IMAGE_USAGE_ENTITY_TYPES = new Set([
   AUDIT_ENTITY_TYPES.CATEGORY || "category",
 
@@ -44,6 +51,9 @@ const PRODUCT_ENTITY_TYPE = AUDIT_ENTITY_TYPES.PRODUCT || "product";
 const PROJECT_ENTITY_TYPE = AUDIT_ENTITY_TYPES.PROJECT || "project";
 
 const STANDARD_ENTITY_TYPE = AUDIT_ENTITY_TYPES.STANDARD || "standard";
+
+const HOME_SECTION_ENTITY_TYPE =
+  AUDIT_ENTITY_TYPES.HOME_SECTION || "homeSection";
 
 function serializeFirestoreValue(value) {
   if (value === null || value === undefined) {
@@ -121,23 +131,44 @@ function decodeCursor(cursor) {
   }
 }
 
-function getMediaStoragePath(trashData) {
-  if (trashData.entityType !== AUDIT_ENTITY_TYPES.MEDIA) {
-    return null;
+function getTrashStoragePath(trashData) {
+  if (trashData.entityType === AUDIT_ENTITY_TYPES.MEDIA) {
+    const storagePath = trashData.originalData?.storagePath;
+
+    if (
+      typeof storagePath !== "string" ||
+      !storagePath.startsWith(`${MEDIA_STORAGE_ROOT}/`)
+    ) {
+      throw new InvalidRequestError(
+        "Media trash item has an invalid storage path",
+      );
+    }
+
+    return storagePath;
   }
 
-  const storagePath = trashData.originalData?.storagePath;
+  if (trashData.entityType === AUDIT_ENTITY_TYPES.MESSAGE) {
+    const attachment = trashData.originalData?.attachment;
 
-  if (
-    typeof storagePath !== "string" ||
-    !storagePath.startsWith(`${MEDIA_STORAGE_ROOT}/`)
-  ) {
-    throw new InvalidRequestError(
-      "Media trash item has an invalid storage path",
-    );
+    if (!attachment) {
+      return null;
+    }
+
+    const storagePath = attachment.storagePath;
+
+    if (
+      typeof storagePath !== "string" ||
+      !storagePath.startsWith(`${CONTACT_ATTACHMENT_ROOT}/`)
+    ) {
+      throw new InvalidRequestError(
+        "Contact message trash item has an invalid attachment path",
+      );
+    }
+
+    return storagePath;
   }
 
-  return storagePath;
+  return null;
 }
 
 function getEntityImageMediaId({ entityType, data }) {
@@ -210,6 +241,36 @@ function getStandardRelationshipMetadata(data = {}) {
       ? data.relatedProductIds
       : [],
   };
+}
+
+function getHomeSectionRelationshipMetadata(data = {}) {
+  if (!data) {
+    return null;
+  }
+
+  return {
+    sectionType: data.sectionType || null,
+
+    desktopImageMediaId: data.desktopImageMediaId || null,
+
+    mobileImageMediaId: data.mobileImageMediaId || null,
+  };
+}
+
+function getDeleteAuditAction(entityType) {
+  if (entityType === HOME_SECTION_ENTITY_TYPE) {
+    return AUDIT_ACTIONS.HOME_SECTION_DELETE;
+  }
+
+  return `${entityType.toUpperCase()}_DELETE`;
+}
+
+function getRestoreAuditAction(entityType) {
+  if (entityType === HOME_SECTION_ENTITY_TYPE) {
+    return AUDIT_ACTIONS.HOME_SECTION_RESTORE;
+  }
+
+  return `${entityType.toUpperCase()}_RESTORE`;
 }
 
 async function prepareImageUsageRelease({
@@ -344,6 +405,22 @@ async function prepareEntityRelationshipRelease({
     };
   }
 
+  if (entityType === HOME_SECTION_ENTITY_TYPE) {
+    const transition = await prepareHomeHeroRelationshipRelease({
+      transaction,
+
+      homeSectionId: entityId,
+      homeSectionData: sourceData,
+
+      actor,
+    });
+
+    return {
+      type: "homeSection",
+      transition,
+    };
+  }
+
   const transition = await prepareImageUsageRelease({
     transaction,
     entityType,
@@ -462,6 +539,38 @@ async function prepareEntityRelationshipRestore({
     }
   }
 
+  if (entityType === HOME_SECTION_ENTITY_TYPE) {
+    try {
+      const transition = await prepareHomeHeroRelationshipRestore({
+        transaction,
+
+        homeSectionId: entityId,
+        homeSectionData: originalData,
+
+        actor,
+      });
+
+      return {
+        type: "homeSection",
+        transition,
+      };
+    } catch (error) {
+      if (
+        error instanceof NotFoundError ||
+        error instanceof InvalidRequestError
+      ) {
+        throw new ConflictError(
+          "This home hero cannot be restored because one or more images are no longer available. Restore the related media first.",
+          {
+            relationships: getHomeSectionRelationshipMetadata(originalData),
+          },
+        );
+      }
+
+      throw error;
+    }
+  }
+
   const transition = await prepareImageUsageRestore({
     transaction,
     entityType,
@@ -522,6 +631,20 @@ function createRestoredData({ entityType, originalData, relationship }) {
       relatedCategories: relationship.transition.categories,
 
       relatedProducts: relationship.transition.products,
+    };
+  }
+
+  if (
+    entityType === HOME_SECTION_ENTITY_TYPE &&
+    relationship?.type === "homeSection" &&
+    relationship.transition
+  ) {
+    return {
+      ...originalData,
+
+      desktopImage: relationship.transition.desktopImage || null,
+
+      mobileImage: relationship.transition.mobileImage || null,
     };
   }
 
@@ -588,7 +711,7 @@ async function markPermanentDeletionFailed({ trashReference, actor, error }) {
   }
 }
 
-async function deleteMediaStorageObject(storagePath) {
+async function deleteStorageObject(storagePath) {
   if (!storagePath) {
     return;
   }
@@ -703,7 +826,7 @@ export async function softDeleteEntity({
     await writeAuditLog({
       actor,
 
-      action: `${entityType.toUpperCase()}_DELETE`,
+      action: getDeleteAuditAction(entityType),
 
       entityType,
       entityId,
@@ -738,6 +861,11 @@ export async function softDeleteEntity({
         standardRelationships:
           entityType === STANDARD_ENTITY_TYPE
             ? getStandardRelationshipMetadata(sourceData)
+            : null,
+
+        homeSectionRelationships:
+          entityType === HOME_SECTION_ENTITY_TYPE
+            ? getHomeSectionRelationshipMetadata(sourceData)
             : null,
 
         relationshipType: relationship.type || null,
@@ -912,7 +1040,7 @@ export async function restoreTrashItem({
     await writeAuditLog({
       actor,
 
-      action: `${trashData.entityType.toUpperCase()}_RESTORE`,
+      action: getRestoreAuditAction(trashData.entityType),
 
       entityType: trashData.entityType,
 
@@ -956,6 +1084,11 @@ export async function restoreTrashItem({
             ? getStandardRelationshipMetadata(restoredOriginalData)
             : null,
 
+        homeSectionRelationships:
+          trashData.entityType === HOME_SECTION_ENTITY_TYPE
+            ? getHomeSectionRelationshipMetadata(restoredOriginalData)
+            : null,
+
         relationshipType: relationship.type || null,
 
         relationshipsRestored: Boolean(relationship.transition),
@@ -996,7 +1129,7 @@ export async function permanentlyDeleteTrashItem({
     throw new InvalidRequestError("Trash item data is invalid");
   }
 
-  const storagePath = getMediaStoragePath(initialTrashData);
+  const storagePath = getTrashStoragePath(initialTrashData);
 
   await markPermanentDeletionStarted({
     trashReference,
@@ -1005,7 +1138,7 @@ export async function permanentlyDeleteTrashItem({
 
   if (storagePath) {
     try {
-      await deleteMediaStorageObject(storagePath);
+      await deleteStorageObject(storagePath);
     } catch (error) {
       await markPermanentDeletionFailed({
         trashReference,
@@ -1014,7 +1147,7 @@ export async function permanentlyDeleteTrashItem({
       });
 
       throw new InvalidRequestError(
-        "Unable to permanently delete the media file from storage",
+        "Unable to permanently delete the associated file from storage",
       );
     }
   }

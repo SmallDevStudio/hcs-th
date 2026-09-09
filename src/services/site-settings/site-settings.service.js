@@ -3,9 +3,11 @@ import "server-only";
 import { FieldValue } from "firebase-admin/firestore";
 
 import { COLLECTIONS } from "@/constants/collections";
+import { InvalidRequestError } from "@/lib/api/errors";
 import { adminDb } from "@/lib/firebase/admin";
 import { DEFAULT_SITE_SETTINGS } from "@/modules/site-settings/site-settings.defaults";
 import { writeAuditLog } from "@/services/audit/audit.service";
+import { encryptEmailSecret } from "@/services/email/email-crypto.service";
 
 const SITE_SETTINGS_DOCUMENT_ID = "global";
 
@@ -87,12 +89,64 @@ function mergeSiteSettings(defaults, stored = {}) {
       ...defaults.integrations,
       ...(stored.integrations || {}),
     },
+
+    notifications: {
+      ...defaults.notifications,
+      ...(stored.notifications || {}),
+
+      channels: {
+        ...defaults.notifications.channels,
+        ...(stored.notifications?.channels || {}),
+      },
+
+      email: {
+        ...defaults.notifications.email,
+        ...(stored.notifications?.email || {}),
+
+        recipients: Array.isArray(stored.notifications?.email?.recipients)
+          ? stored.notifications.email.recipients
+          : defaults.notifications.email.recipients,
+      },
+
+      line: {
+        ...defaults.notifications.line,
+        ...(stored.notifications?.line || {}),
+
+        targetIds: Array.isArray(stored.notifications?.line?.targetIds)
+          ? stored.notifications.line.targetIds
+          : defaults.notifications.line.targetIds,
+      },
+    },
   };
 }
 
 function normalizeKeywords(keywords = []) {
   return [
-    ...new Set(keywords.map((keyword) => keyword.trim()).filter(Boolean)),
+    ...new Set(
+      keywords.map((keyword) => String(keyword || "").trim()).filter(Boolean),
+    ),
+  ];
+}
+
+function normalizeEmailList(values = []) {
+  return [
+    ...new Set(
+      values
+        .map((value) =>
+          String(value || "")
+            .trim()
+            .toLowerCase(),
+        )
+        .filter(Boolean),
+    ),
+  ];
+}
+
+function normalizeStringList(values = []) {
+  return [
+    ...new Set(
+      values.map((value) => String(value || "").trim()).filter(Boolean),
+    ),
   ];
 }
 
@@ -112,6 +166,7 @@ function createSeoFallback(settings, locale) {
 
   return {
     title: [companyName, tagline].filter(Boolean).join(" | ").slice(0, 70),
+
     description: description.slice(0, 180),
   };
 }
@@ -133,6 +188,14 @@ function normalizeSettings(settings) {
     );
   }
 
+  normalized.notifications.email.recipients = normalizeEmailList(
+    normalized.notifications.email.recipients,
+  );
+
+  normalized.notifications.line.targetIds = normalizeStringList(
+    normalized.notifications.line.targetIds,
+  );
+
   return normalized;
 }
 
@@ -152,7 +215,138 @@ function serializeTimestamp(value) {
   return value;
 }
 
-export async function getSiteSettings() {
+function sanitizeNotificationSettings(notifications = {}) {
+  const email = notifications.email || {};
+  const line = notifications.line || {};
+
+  return {
+    channels: {
+      inApp: Boolean(notifications.channels?.inApp),
+
+      email: Boolean(notifications.channels?.email),
+
+      line: Boolean(notifications.channels?.line),
+    },
+
+    email: {
+      smtpHost: email.smtpHost || "",
+      smtpPort: Number(email.smtpPort || 587),
+      smtpSecure: Boolean(email.smtpSecure),
+      smtpUsername: email.smtpUsername || "",
+
+      smtpPassword: "",
+
+      passwordConfigured: Boolean(email.smtpPasswordEncrypted),
+
+      fromName: email.fromName || "HCS Thailand Website",
+
+      fromEmail: email.fromEmail || "",
+
+      recipients: Array.isArray(email.recipients) ? email.recipients : [],
+    },
+
+    line: {
+      channelAccessToken: "",
+
+      tokenConfigured: Boolean(line.channelAccessTokenEncrypted),
+
+      targetIds: Array.isArray(line.targetIds) ? line.targetIds : [],
+    },
+  };
+}
+
+function sanitizeSettings(settings) {
+  return {
+    company: settings.company,
+    contact: settings.contact,
+    social: settings.social,
+    branding: settings.branding,
+    seo: settings.seo,
+    integrations: settings.integrations,
+
+    notifications: sanitizeNotificationSettings(settings.notifications),
+  };
+}
+
+function createNotificationWriteData({ notifications, existingNotifications }) {
+  const currentEmail = existingNotifications?.email || {};
+
+  const currentLine = existingNotifications?.line || {};
+
+  const submittedSmtpPassword = notifications.email.smtpPassword || "";
+
+  const submittedLineToken = notifications.line.channelAccessToken || "";
+
+  const smtpPasswordEncrypted = submittedSmtpPassword
+    ? encryptEmailSecret(submittedSmtpPassword)
+    : currentEmail.smtpPasswordEncrypted || "";
+
+  const channelAccessTokenEncrypted = submittedLineToken
+    ? encryptEmailSecret(submittedLineToken)
+    : currentLine.channelAccessTokenEncrypted || "";
+
+  if (notifications.channels.email && !smtpPasswordEncrypted) {
+    throw new InvalidRequestError(
+      "SMTP password is required before enabling email notifications",
+    );
+  }
+
+  if (notifications.channels.line && !channelAccessTokenEncrypted) {
+    throw new InvalidRequestError(
+      "LINE channel access token is required before enabling LINE notifications",
+    );
+  }
+
+  return {
+    channels: {
+      inApp: Boolean(notifications.channels.inApp),
+
+      email: Boolean(notifications.channels.email),
+
+      line: Boolean(notifications.channels.line),
+    },
+
+    email: {
+      smtpHost: notifications.email.smtpHost,
+
+      smtpPort: Number(notifications.email.smtpPort),
+
+      smtpSecure: Boolean(notifications.email.smtpSecure),
+
+      smtpUsername: notifications.email.smtpUsername,
+
+      smtpPasswordEncrypted,
+
+      fromName: notifications.email.fromName,
+
+      fromEmail: notifications.email.fromEmail,
+
+      recipients: normalizeEmailList(notifications.email.recipients),
+    },
+
+    line: {
+      channelAccessTokenEncrypted,
+
+      targetIds: normalizeStringList(notifications.line.targetIds),
+    },
+  };
+}
+
+function createSettingsResponse({ id, settings, metadata = {} }) {
+  return {
+    id,
+
+    ...sanitizeSettings(settings),
+
+    createdAt: serializeTimestamp(metadata.createdAt),
+
+    updatedAt: serializeTimestamp(metadata.updatedAt),
+
+    updatedBy: metadata.updatedBy || null,
+  };
+}
+
+async function getSiteSettingsSnapshot() {
   const reference = adminDb
     .collection(COLLECTIONS.SITE_SETTINGS)
     .doc(SITE_SETTINGS_DOCUMENT_ID);
@@ -161,23 +355,58 @@ export async function getSiteSettings() {
 
   if (!snapshot.exists) {
     return {
-      id: SITE_SETTINGS_DOCUMENT_ID,
-      ...structuredClone(DEFAULT_SITE_SETTINGS),
-      createdAt: null,
-      updatedAt: null,
-      updatedBy: null,
+      reference,
+      snapshot,
+      data: null,
+
+      settings: mergeSiteSettings(DEFAULT_SITE_SETTINGS, {}),
     };
   }
 
   const data = snapshot.data();
-  const mergedSettings = mergeSiteSettings(DEFAULT_SITE_SETTINGS, data);
 
   return {
-    id: snapshot.id,
-    ...mergedSettings,
-    createdAt: serializeTimestamp(data.createdAt),
-    updatedAt: serializeTimestamp(data.updatedAt),
-    updatedBy: data.updatedBy || null,
+    reference,
+    snapshot,
+    data,
+
+    settings: mergeSiteSettings(DEFAULT_SITE_SETTINGS, data),
+  };
+}
+
+export async function getSiteSettings() {
+  const { snapshot, data, settings } = await getSiteSettingsSnapshot();
+
+  return createSettingsResponse({
+    id: snapshot.exists ? snapshot.id : SITE_SETTINGS_DOCUMENT_ID,
+
+    settings,
+
+    metadata: data || {},
+  });
+}
+
+export async function getInternalNotificationSettings() {
+  const { settings } = await getSiteSettingsSnapshot();
+
+  return {
+    ...settings.notifications,
+
+    email: {
+      ...settings.notifications.email,
+
+      smtpPassword: undefined,
+
+      passwordConfigured: undefined,
+    },
+
+    line: {
+      ...settings.notifications.line,
+
+      channelAccessToken: undefined,
+
+      tokenConfigured: undefined,
+    },
   };
 }
 
@@ -194,20 +423,41 @@ export async function updateSiteSettings({
 
   await adminDb.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(reference);
+
     const existingData = snapshot.exists ? snapshot.data() : null;
 
-    const before = existingData
-      ? mergeSiteSettings(DEFAULT_SITE_SETTINGS, existingData)
-      : structuredClone(DEFAULT_SITE_SETTINGS);
+    const existingSettings = mergeSiteSettings(
+      DEFAULT_SITE_SETTINGS,
+      existingData || {},
+    );
+
+    const notificationWriteData = createNotificationWriteData({
+      notifications: normalizedSettings.notifications,
+
+      existingNotifications: existingData?.notifications || {},
+    });
 
     const writeData = {
-      ...normalizedSettings,
+      company: normalizedSettings.company,
+
+      contact: normalizedSettings.contact,
+
+      social: normalizedSettings.social,
+
+      branding: normalizedSettings.branding,
+
+      seo: normalizedSettings.seo,
+
+      integrations: normalizedSettings.integrations,
+
+      notifications: notificationWriteData,
 
       createdAt: existingData?.createdAt || FieldValue.serverTimestamp(),
 
       createdBy: existingData?.createdBy || actor.uid,
 
       updatedAt: FieldValue.serverTimestamp(),
+
       updatedBy: actor.uid,
     };
 
@@ -217,12 +467,23 @@ export async function updateSiteSettings({
 
     await writeAuditLog({
       actor,
+
       action: snapshot.exists ? "SITE_SETTINGS_UPDATE" : "SITE_SETTINGS_CREATE",
+
       entityType: "siteSettings",
+
       entityId: SITE_SETTINGS_DOCUMENT_ID,
-      before,
-      after: normalizedSettings,
+
+      before: sanitizeSettings(existingSettings),
+
+      after: sanitizeSettings({
+        ...normalizedSettings,
+
+        notifications: notificationWriteData,
+      }),
+
       metadata: requestMetadata,
+
       transaction,
     });
   });
