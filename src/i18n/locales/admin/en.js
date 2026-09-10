@@ -40,6 +40,7 @@ const adminEn = {
 
     home: "Home Page",
     pages: "Website Pages",
+    about: "About Us",
     siteSettings: "Site Settings",
 
     products: "Products",

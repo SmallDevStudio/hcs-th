@@ -14,6 +14,7 @@ import {
   FiTrash2,
   FiUserCheck,
   FiUsers,
+  FiInfo,
 } from "react-icons/fi";
 
 import { ADMIN_PERMISSIONS, hasPermission } from "@/constants/admin";
@@ -37,6 +38,13 @@ export const ADMIN_NAVIGATION = [
         labelKey: "navigation.home",
         href: "/admin/home",
         icon: FiHome,
+        permission: ADMIN_PERMISSIONS.PAGES_VIEW,
+      },
+      {
+        key: "about",
+        labelKey: "navigation.about",
+        href: "/admin/about",
+        icon: FiInfo,
         permission: ADMIN_PERMISSIONS.PAGES_VIEW,
       },
       {

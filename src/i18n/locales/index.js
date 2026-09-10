@@ -10,6 +10,9 @@ import adminTh from "@/i18n/locales/admin/th";
 import adminCoreEn from "@/i18n/locales/admin/core/en";
 import adminCoreTh from "@/i18n/locales/admin/core/th";
 
+import adminAboutEn from "@/i18n/locales/admin/about/en";
+import adminAboutTh from "@/i18n/locales/admin/about/th";
+
 import auditLogsEn from "@/i18n/locales/admin/audit-logs/en";
 import auditLogsTh from "@/i18n/locales/admin/audit-logs/th";
 
@@ -86,6 +89,7 @@ export const i18nResources = {
     admin: {
       ...adminEn,
       core: adminCoreEn,
+      about: adminAboutEn,
       auditLogs: auditLogsEn,
       categories: categoriesEn,
       dashboard: dashboardEn,
@@ -119,6 +123,7 @@ export const i18nResources = {
     admin: {
       ...adminTh,
       core: adminCoreTh,
+      about: adminAboutTh,
       auditLogs: auditLogsTh,
       categories: categoriesTh,
       dashboard: dashboardTh,

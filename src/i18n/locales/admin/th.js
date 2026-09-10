@@ -39,6 +39,7 @@ const adminTh = {
     },
 
     home: "หน้าแรก",
+    about: "เกี่ยวกับเรา",
     pages: "หน้าเว็บไซต์",
     siteSettings: "ข้อมูลเว็บไซต์",
 
