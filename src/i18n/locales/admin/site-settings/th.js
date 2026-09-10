@@ -1,12 +1,16 @@
 const siteSettingsTh = {
   eyebrow: "ตั้งค่าเว็บไซต์",
+
   title: "ข้อมูลเว็บไซต์",
+
   description:
     "จัดการข้อมูลบริษัท ช่องทางติดต่อ Branding, SEO และระบบแจ้งเตือน",
 
   actions: {
     save: "บันทึกการเปลี่ยนแปลง",
+
     saving: "กำลังบันทึก...",
+
     saved: "อัปเดตข้อมูลเว็บไซต์เรียบร้อยแล้ว",
 
     saveFailed: "ไม่สามารถอัปเดตข้อมูลเว็บไซต์ได้",
@@ -14,37 +18,47 @@ const siteSettingsTh = {
 
   tabs: {
     company: "ข้อมูลบริษัท",
+
     contact: "ช่องทางติดต่อ",
+
     social: "Social Media",
+
     brandingSeo: "Branding และ SEO",
+
     integrations: "การเชื่อมต่อ",
+
     notifications: "การแจ้งเตือน",
   },
 
   sections: {
     company: {
       title: "ข้อมูลบริษัท",
+
       description: "ข้อมูลทั่วไปที่นำไปแสดงในส่วนต่าง ๆ ของเว็บไซต์",
     },
 
     contact: {
       title: "ข้อมูลการติดต่อ",
+
       description: "เบอร์โทรศัพท์ อีเมล ที่อยู่ และเวลาทำการของบริษัท",
     },
 
     social: {
       title: "Social Media",
+
       description: "ลิงก์ที่นำไปแสดงใน Header, Footer และหน้าติดต่อ",
     },
 
     branding: {
       title: "Branding",
+
       description:
         "สีหลัก โลโก้บริษัท และรูปเริ่มต้นสำหรับแชร์ผ่าน Social Media",
     },
 
     seo: {
       title: "SEO เริ่มต้น",
+
       description:
         "Metadata สำรองสำหรับหน้าที่ยังไม่ได้กำหนดข้อมูล SEO โดยเฉพาะ",
     },
@@ -60,41 +74,62 @@ const siteSettingsTh = {
   notifications: {
     channels: {
       title: "ช่องทางการแจ้งเตือน",
+
       description:
         "เลือกช่องทางแจ้งเตือนผู้ดูแลระบบเมื่อมีผู้ส่งข้อความใหม่ผ่านเว็บไซต์",
 
       inApp: "ภายในระบบ",
+
       inAppDescription: "แสดงข้อความใหม่และสถานะยังไม่ได้อ่านใน Admin Panel",
 
       email: "อีเมล",
+
       emailDescription: "ส่งรายละเอียดข้อความไปยังอีเมลผู้รับที่กำหนด",
 
       line: "LINE",
-      lineDescription: "ส่งข้อความแจ้งเตือนผ่าน LINE Messaging API",
+
+      lineDescription:
+        "ส่งข้อความแจ้งเตือนไปยังผู้ใช้ที่เลือกผ่าน LINE Messaging API",
     },
 
     email: {
       title: "แจ้งเตือนทางอีเมล",
+
       description:
         "ตั้งค่า SMTP Server และรายชื่อผู้รับแจ้งเตือนจากหน้า Contact",
 
       smtpTitle: "ตั้งค่า SMTP",
+
       smtpDescription: "รหัสผ่าน SMTP จะถูกเข้ารหัสก่อนจัดเก็บ",
     },
 
     line: {
       title: "แจ้งเตือนทาง LINE",
+
       description:
-        "เชื่อมต่อ LINE Official Account และกำหนดผู้ใช้งานหรือกลุ่มที่ต้องการรับแจ้งเตือน",
+        "ตั้งค่า LINE Messaging API, LINE Login และเลือกผู้ใช้ที่เชื่อมบัญชีแล้วเพื่อรับการแจ้งเตือน",
 
       messagingApiTitle: "LINE Messaging API",
 
       messagingApiDescription:
         "ใช้ Channel Access Token ของ LINE Official Account สำหรับส่ง Push Message",
+
+      loginTitle: "การเชื่อมต่อ LINE Login",
+
+      loginDescription:
+        "LINE Login ใช้เชื่อมบัญชีผู้ดูแลระบบกับ LINE อย่างปลอดภัย โดยไม่ต้องกรอก LINE User ID ด้วยตนเอง",
+
+      noConnectedUsers: "ยังไม่มีผู้ใช้ที่เชื่อมต่อ LINE",
+
+      noConnectedUsersDescription:
+        "ผู้ใช้จะปรากฏที่นี่หลังจากเชื่อม LINE จากหน้าบัญชี โดยจะแสดงเฉพาะผู้ใช้ที่ Active และยังเชื่อมต่ออยู่เท่านั้น",
+
+      connected: "เชื่อมต่อแล้ว",
     },
 
     fields: {
       smtpHost: "SMTP Host",
+
       smtpPort: "SMTP Port",
 
       smtpSecure: "ใช้การเชื่อมต่อ SMTP แบบ Secure",
@@ -107,13 +142,18 @@ const siteSettingsTh = {
       smtpPassword: "รหัสผ่าน SMTP",
 
       fromName: "ชื่อผู้ส่ง",
+
       fromEmail: "อีเมลผู้ส่ง",
 
       emailRecipients: "อีเมลผู้รับแจ้งเตือน",
 
       lineToken: "Channel Access Token",
 
-      lineTargets: "LINE User ID หรือ Group ID",
+      lineLoginChannelId: "LINE Login Channel ID",
+
+      lineLoginChannelSecret: "LINE Login Channel Secret",
+
+      lineRecipients: "ผู้รับแจ้งเตือนทาง LINE",
     },
 
     placeholders: {
@@ -121,12 +161,11 @@ const siteSettingsTh = {
 
       lineToken: "กรอก Channel Access Token จาก LINE Messaging API",
 
+      lineLoginChannelSecret: "กรอก Channel Secret จาก LINE Login",
+
       secretConfigured: "มีข้อมูลลับบันทึกไว้แล้ว เว้นว่างไว้เพื่อใช้ค่าเดิม",
 
       emailRecipients: "sales@hcsthailand.com\nsupport@hcsthailand.com",
-
-      lineTargets:
-        "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\nCxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     },
 
     hints: {
@@ -135,8 +174,8 @@ const siteSettingsTh = {
       multipleValues:
         "กรอกหนึ่งรายการต่อหนึ่งบรรทัด หรือคั่นด้วย comma หรือ semicolon",
 
-      lineTargets:
-        "กรอก LINE User ID หรือ Group ID หนึ่งรายการต่อบรรทัด และต้องอนุญาตให้ Official Account ส่งข้อความถึงปลายทาง",
+      lineRecipients:
+        "สามารถเลือกได้เฉพาะผู้ใช้สถานะ Active ที่เชื่อมบัญชี LINE แล้ว",
     },
 
     status: {
@@ -147,6 +186,10 @@ const siteSettingsTh = {
       tokenConfigured: "ตั้งค่า LINE Token แล้ว",
 
       tokenMissing: "ยังไม่ได้ตั้งค่า LINE Token",
+
+      loginSecretConfigured: "ตั้งค่า LINE Login Secret แล้ว",
+
+      loginSecretMissing: "ยังไม่ได้ตั้งค่า LINE Login Secret",
     },
 
     actions: {
@@ -157,6 +200,8 @@ const siteSettingsTh = {
       testLine: "ส่ง LINE ทดสอบ",
 
       testingLine: "กำลังส่ง LINE ทดสอบ...",
+
+      reloadUsers: "โหลดรายชื่อใหม่",
     },
 
     messages: {
@@ -164,25 +209,34 @@ const siteSettingsTh = {
 
       recipientRequired: "กรุณากรอกอีเมลผู้รับแจ้งเตือนอย่างน้อยหนึ่งรายการ",
 
+      lineRecipientRequired:
+        "กรุณาเลือกผู้ใช้ที่เชื่อม LINE แล้วอย่างน้อยหนึ่งคน",
+
       emailTestSent: "ส่งอีเมลทดสอบไปยัง {{email}} สำเร็จ",
 
       emailTestFailed: "ไม่สามารถส่งอีเมลทดสอบได้",
 
-      lineTestSent: "ส่ง LINE ทดสอบสำเร็จ {{count}} ปลายทาง",
+      lineTestSent: "ส่ง LINE ทดสอบสำเร็จ {{count}} คน",
 
       lineTestFailed: "ไม่สามารถส่ง LINE ทดสอบได้",
+
+      lineRecipientsLoadFailed: "ไม่สามารถโหลดรายชื่อผู้ใช้ที่เชื่อม LINE ได้",
     },
   },
 
   language: {
     english: "ภาษาอังกฤษ",
+
     thai: "ภาษาไทย",
   },
 
   fields: {
     displayName: "ชื่อที่ใช้แสดง",
+
     legalName: "ชื่อบริษัทตามกฎหมาย",
+
     tagline: "ข้อความแนะนำบริษัท",
+
     description: "รายละเอียดบริษัท",
 
     registrationNumber: "เลขทะเบียนบริษัท",
@@ -194,7 +248,9 @@ const siteSettingsTh = {
     secondaryPhone: "เบอร์โทรศัพท์สำรอง",
 
     email: "อีเมลทั่วไป",
+
     salesEmail: "อีเมลฝ่ายขาย",
+
     address: "ที่อยู่",
 
     googleMapsUrl: "ลิงก์ Google Maps",
@@ -202,17 +258,25 @@ const siteSettingsTh = {
     googleMapsEmbedUrl: "ลิงก์ Google Maps Embed",
 
     lineId: "LINE ID",
+
     businessHours: "เวลาทำการ",
 
     facebook: "ลิงก์ Facebook",
+
     instagram: "ลิงก์ Instagram",
+
     youtube: "ลิงก์ YouTube",
+
     linkedin: "ลิงก์ LinkedIn",
+
     line: "ลิงก์ LINE",
 
     primaryColor: "สีหลัก",
+
     secondaryColor: "สีรอง",
+
     logoPrimary: "โลโก้สีหลัก",
+
     logoWhite: "โลโก้สีขาว",
 
     defaultOgImage: "รูป Open Graph เริ่มต้น",
@@ -223,7 +287,9 @@ const siteSettingsTh = {
       "Search Engine สามารถเก็บและแสดงเว็บไซต์ Public ในผลการค้นหาได้",
 
     seoTitle: "ชื่อ SEO",
+
     seoDescription: "คำอธิบาย SEO",
+
     seoKeywords: "คำค้นหา SEO",
 
     googleSiteVerification: "รหัสยืนยัน Google",
@@ -265,7 +331,9 @@ const siteSettingsTh = {
     businessHours: "วันจันทร์ – วันศุกร์ เวลา 08:30 – 17:30 น.",
 
     socialUrl: "https://...",
+
     logoPath: "/images/brand/...",
+
     ogImagePath: "/images/seo/...",
 
     seoTitle: "ชื่อหน้าที่แสดงบน Search Engine",

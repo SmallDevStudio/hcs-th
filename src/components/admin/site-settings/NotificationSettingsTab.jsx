@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { useWatch } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, useWatch } from "react-hook-form";
 import {
   FiBell,
+  FiCheck,
   FiCheckCircle,
   FiMail,
   FiMessageCircle,
+  FiRefreshCw,
   FiSend,
+  FiUser,
 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -30,12 +33,25 @@ function getFirstRecipient(value) {
   );
 }
 
+function normalizeSelectedUserIds(values) {
+  if (!Array.isArray(values)) {
+    return [];
+  }
+
+  return [
+    ...new Set(
+      values.map((value) => String(value || "").trim()).filter(Boolean),
+    ),
+  ];
+}
+
 function SecretStatus({ configured, configuredLabel, missingLabel }) {
   return (
     <div
       className={[
         "inline-flex items-center gap-2 rounded-full px-3 py-1.5",
         "text-xs font-semibold",
+
         configured
           ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300"
           : "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300",
@@ -48,6 +64,188 @@ function SecretStatus({ configured, configuredLabel, missingLabel }) {
   );
 }
 
+function RecipientAvatar({ recipient }) {
+  const displayName =
+    recipient.displayName ||
+    recipient.email ||
+    recipient.lineConnection?.displayName ||
+    "U";
+
+  const initials = displayName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word.charAt(0).toUpperCase())
+    .join("");
+
+  return (
+    <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-extrabold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+      {initials || <FiUser aria-hidden="true" />}
+    </span>
+  );
+}
+
+function LineRecipientSelector({
+  control,
+  recipients,
+  loading,
+  loadError,
+  onReload,
+}) {
+  const { t } = useTranslation("admin");
+
+  return (
+    <Controller
+      control={control}
+      name="notifications.line.recipientUserIds"
+      render={({ field, fieldState }) => {
+        const selectedUserIds = normalizeSelectedUserIds(field.value);
+
+        function toggleRecipient(userId) {
+          const selected = selectedUserIds.includes(userId);
+
+          const nextUserIds = selected
+            ? selectedUserIds.filter(
+                (currentUserId) => currentUserId !== userId,
+              )
+            : [...selectedUserIds, userId];
+
+          field.onChange(nextUserIds);
+
+          field.onBlur();
+        }
+
+        return (
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <label className="text-sm font-bold text-slate-900 dark:text-white">
+                  {t("siteSettings.notifications.fields.lineRecipients")}
+                </label>
+
+                <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                  {t("siteSettings.notifications.hints.lineRecipients")}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={onReload}
+                disabled={loading}
+                className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 text-xs font-semibold text-slate-600 transition hover:border-[#0979c4] hover:text-[#0979c4] disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:text-slate-300"
+              >
+                <FiRefreshCw
+                  aria-hidden="true"
+                  className={loading ? "animate-spin" : ""}
+                />
+
+                <span>
+                  {t("siteSettings.notifications.actions.reloadUsers")}
+                </span>
+              </button>
+            </div>
+
+            {loading ? (
+              <div className="flex min-h-32 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/40">
+                <span
+                  aria-hidden="true"
+                  className="size-6 animate-spin rounded-full border-2 border-[#0979c4]/25 border-t-[#0979c4]"
+                />
+              </div>
+            ) : null}
+
+            {!loading && loadError ? (
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+                {loadError}
+              </div>
+            ) : null}
+
+            {!loading && !loadError && !recipients.length ? (
+              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center dark:border-slate-700 dark:bg-slate-900/40">
+                <FiMessageCircle
+                  aria-hidden="true"
+                  className="mx-auto text-3xl text-slate-300 dark:text-slate-600"
+                />
+
+                <p className="mt-3 text-sm font-bold text-slate-700 dark:text-slate-200">
+                  {t("siteSettings.notifications.line.noConnectedUsers")}
+                </p>
+
+                <p className="mx-auto mt-1 max-w-lg text-xs leading-5 text-slate-500 dark:text-slate-400">
+                  {t(
+                    "siteSettings.notifications.line.noConnectedUsersDescription",
+                  )}
+                </p>
+              </div>
+            ) : null}
+
+            {!loading && !loadError && recipients.length ? (
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {recipients.map((recipient) => {
+                  const selected = selectedUserIds.includes(recipient.id);
+
+                  return (
+                    <button
+                      key={recipient.id}
+                      type="button"
+                      role="checkbox"
+                      aria-checked={selected}
+                      onClick={() => toggleRecipient(recipient.id)}
+                      className={[
+                        "relative flex min-h-[82px] items-center gap-3 rounded-xl border p-3 text-left transition",
+
+                        selected
+                          ? "border-emerald-500 bg-emerald-50/80 shadow-sm ring-1 ring-emerald-500/20 dark:bg-emerald-500/10"
+                          : "border-slate-200 bg-white hover:border-emerald-400 dark:border-slate-700 dark:bg-slate-900/40",
+                      ].join(" ")}
+                    >
+                      <RecipientAvatar recipient={recipient} />
+
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-bold text-slate-900 dark:text-white">
+                          {recipient.displayName || recipient.email}
+                        </span>
+
+                        <span className="mt-0.5 block truncate text-xs text-slate-500 dark:text-slate-400">
+                          {recipient.email}
+                        </span>
+
+                        <span className="mt-1 block truncate text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                          LINE:{" "}
+                          {recipient.lineConnection?.displayName ||
+                            t("siteSettings.notifications.line.connected")}
+                        </span>
+                      </span>
+
+                      <span
+                        className={[
+                          "absolute right-3 top-3 flex size-6 items-center justify-center rounded-full border transition",
+
+                          selected
+                            ? "border-emerald-600 bg-emerald-600 text-white"
+                            : "border-slate-300 bg-white text-transparent dark:border-slate-600 dark:bg-slate-800",
+                        ].join(" ")}
+                      >
+                        <FiCheck aria-hidden="true" />
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+
+            {fieldState.error?.message ? (
+              <p className="text-xs font-medium text-red-600 dark:text-red-400">
+                {fieldState.error.message}
+              </p>
+            ) : null}
+          </div>
+        );
+      }}
+    />
+  );
+}
+
 export function NotificationSettingsTab({ control, hasUnsavedChanges }) {
   const { t } = useTranslation("admin");
 
@@ -55,9 +253,18 @@ export function NotificationSettingsTab({ control, hasUnsavedChanges }) {
 
   const [testingLine, setTestingLine] = useState(false);
 
+  const [lineRecipients, setLineRecipients] = useState([]);
+
+  const [loadingLineRecipients, setLoadingLineRecipients] = useState(true);
+
+  const [lineRecipientsError, setLineRecipientsError] = useState("");
+
+  const [recipientReloadKey, setRecipientReloadKey] = useState(0);
+
   const emailEnabled = Boolean(
     useWatch({
       control,
+
       name: "notifications.channels.email",
     }),
   );
@@ -65,6 +272,7 @@ export function NotificationSettingsTab({ control, hasUnsavedChanges }) {
   const lineEnabled = Boolean(
     useWatch({
       control,
+
       name: "notifications.channels.line",
     }),
   );
@@ -72,6 +280,7 @@ export function NotificationSettingsTab({ control, hasUnsavedChanges }) {
   const passwordConfigured = Boolean(
     useWatch({
       control,
+
       name: "notifications.email.passwordConfigured",
     }),
   );
@@ -79,15 +288,80 @@ export function NotificationSettingsTab({ control, hasUnsavedChanges }) {
   const tokenConfigured = Boolean(
     useWatch({
       control,
+
       name: "notifications.line.tokenConfigured",
+    }),
+  );
+
+  const loginSecretConfigured = Boolean(
+    useWatch({
+      control,
+
+      name: "notifications.line.loginSecretConfigured",
+    }),
+  );
+
+  const selectedLineRecipients = normalizeSelectedUserIds(
+    useWatch({
+      control,
+
+      name: "notifications.line.recipientUserIds",
     }),
   );
 
   const emailRecipients =
     useWatch({
       control,
+
       name: "notifications.email.recipients",
     }) || "";
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    async function loadRecipients() {
+      setLoadingLineRecipients(true);
+
+      setLineRecipientsError("");
+
+      try {
+        const response = await apiClient.get("/users/line-recipients", {
+          signal: abortController.signal,
+        });
+
+        if (abortController.signal.aborted) {
+          return;
+        }
+
+        setLineRecipients(Array.isArray(response.data) ? response.data : []);
+      } catch (error) {
+        if (
+          abortController.signal.aborted ||
+          error?.code === "ERR_CANCELED" ||
+          error?.originalError?.code === "ERR_CANCELED"
+        ) {
+          return;
+        }
+
+        setLineRecipients([]);
+
+        setLineRecipientsError(
+          error?.response?.data?.message ||
+            t("siteSettings.notifications.messages.lineRecipientsLoadFailed"),
+        );
+      } finally {
+        if (!abortController.signal.aborted) {
+          setLoadingLineRecipients(false);
+        }
+      }
+    }
+
+    void loadRecipients();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [recipientReloadKey, t]);
 
   async function testEmail() {
     if (hasUnsavedChanges) {
@@ -129,6 +403,14 @@ export function NotificationSettingsTab({ control, hasUnsavedChanges }) {
   async function testLine() {
     if (hasUnsavedChanges) {
       toast.error(t("siteSettings.notifications.messages.saveBeforeTest"));
+
+      return;
+    }
+
+    if (!selectedLineRecipients.length) {
+      toast.error(
+        t("siteSettings.notifications.messages.lineRecipientRequired"),
+      );
 
       return;
     }
@@ -196,6 +478,7 @@ export function NotificationSettingsTab({ control, hasUnsavedChanges }) {
         <div
           className={[
             "space-y-6 transition-opacity",
+
             emailEnabled ? "opacity-100" : "opacity-70",
           ].join(" ")}
         >
@@ -344,6 +627,7 @@ export function NotificationSettingsTab({ control, hasUnsavedChanges }) {
         <div
           className={[
             "space-y-6 transition-opacity",
+
             lineEnabled ? "opacity-100" : "opacity-70",
           ].join(" ")}
         >
@@ -387,23 +671,82 @@ export function NotificationSettingsTab({ control, hasUnsavedChanges }) {
             autoComplete="new-password"
           />
 
-          <AdminFormField
-            control={control}
-            name="notifications.line.targetIds"
-            label={t("siteSettings.notifications.fields.lineTargets")}
-            placeholder={t(
-              "siteSettings.notifications.placeholders.lineTargets",
-            )}
-            hint={t("siteSettings.notifications.hints.lineTargets")}
-            multiline
-            rows={4}
-          />
+          <div className="border-t border-slate-200 pt-6 dark:border-slate-700">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h3 className="font-bold text-slate-950 dark:text-white">
+                  {t("siteSettings.notifications.line.loginTitle")}
+                </h3>
+
+                <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                  {t("siteSettings.notifications.line.loginDescription")}
+                </p>
+              </div>
+
+              <SecretStatus
+                configured={loginSecretConfigured}
+                configuredLabel={t(
+                  "siteSettings.notifications.status.loginSecretConfigured",
+                )}
+                missingLabel={t(
+                  "siteSettings.notifications.status.loginSecretMissing",
+                )}
+              />
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <AdminFormField
+                control={control}
+                name="notifications.line.loginChannelId"
+                label={t(
+                  "siteSettings.notifications.fields.lineLoginChannelId",
+                )}
+                placeholder="1234567890"
+                autoComplete="off"
+              />
+
+              <AdminFormField
+                control={control}
+                name="notifications.line.loginChannelSecret"
+                label={t(
+                  "siteSettings.notifications.fields.lineLoginChannelSecret",
+                )}
+                placeholder={
+                  loginSecretConfigured
+                    ? t(
+                        "siteSettings.notifications.placeholders.secretConfigured",
+                      )
+                    : t(
+                        "siteSettings.notifications.placeholders.lineLoginChannelSecret",
+                      )
+                }
+                hint={t("siteSettings.notifications.hints.secret")}
+                type="password"
+                autoComplete="new-password"
+              />
+            </div>
+          </div>
+
+          <div className="border-t border-slate-200 pt-6 dark:border-slate-700">
+            <LineRecipientSelector
+              control={control}
+              recipients={lineRecipients}
+              loading={loadingLineRecipients}
+              loadError={lineRecipientsError}
+              onReload={() => setRecipientReloadKey((current) => current + 1)}
+            />
+          </div>
 
           <div className="flex justify-end border-t border-slate-200 pt-5 dark:border-slate-700">
             <button
               type="button"
               onClick={testLine}
-              disabled={testingLine || hasUnsavedChanges || !tokenConfigured}
+              disabled={
+                testingLine ||
+                hasUnsavedChanges ||
+                !tokenConfigured ||
+                !selectedLineRecipients.length
+              }
               className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-emerald-600 px-5 text-sm font-bold text-emerald-700 transition hover:bg-emerald-600 hover:!text-white disabled:cursor-not-allowed disabled:opacity-50 dark:text-emerald-300"
             >
               {testingLine ? (

@@ -66,8 +66,10 @@ export const DEFAULT_SITE_SETTINGS = {
 
     en: {
       title: "HCS Thailand | Hardware & Security Solutions",
+
       description:
         "Architectural hardware, security products, fire doors and total opening solutions for every project.",
+
       keywords: [
         "HCS Thailand",
         "architectural hardware",
@@ -82,8 +84,10 @@ export const DEFAULT_SITE_SETTINGS = {
 
     th: {
       title: "HCS Thailand | อุปกรณ์ประตูและระบบรักษาความปลอดภัย",
+
       description:
         "อุปกรณ์ประตูสถาปัตยกรรม ระบบรักษาความปลอดภัย ประตูกันไฟ และโซลูชันการเปิดประตูครบวงจร",
+
       keywords: [
         "HCS Thailand",
         "อุปกรณ์ประตู",
@@ -125,7 +129,13 @@ export const DEFAULT_SITE_SETTINGS = {
     line: {
       channelAccessToken: "",
       tokenConfigured: false,
-      targetIds: [],
+
+      loginChannelId: "",
+
+      loginChannelSecret: "",
+      loginSecretConfigured: false,
+
+      recipientUserIds: [],
     },
   },
 };

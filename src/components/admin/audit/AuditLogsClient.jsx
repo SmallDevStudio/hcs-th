@@ -73,6 +73,48 @@ function formatJson(value) {
   return JSON.stringify(value, null, 2);
 }
 
+function getAuditTarget(item) {
+  return (
+    item?.metadata?.targetUser ||
+    item?.metadata?.targetGroup ||
+    item?.metadata?.target ||
+    null
+  );
+}
+
+function getAuditTargetName(item) {
+  const target = getAuditTarget(item);
+
+  if (!target) {
+    return "";
+  }
+
+  return (
+    target.displayName ||
+    target.name ||
+    target.title ||
+    target.email ||
+    target.slug ||
+    ""
+  );
+}
+
+function getAuditTargetSecondary(item) {
+  const target = getAuditTarget(item);
+
+  if (!target) {
+    return "";
+  }
+
+  const primaryName = getAuditTargetName(item);
+
+  if (target.email && target.email !== primaryName) {
+    return target.email;
+  }
+
+  return target.uid || target.id || "";
+}
+
 function ActionBadge({ action }) {
   const { t } = useTranslation("admin");
 
@@ -108,6 +150,10 @@ function AuditDetailsDialog({ item, onClose }) {
   }
 
   const changes = Object.entries(item.changes || {});
+
+  const targetName = getAuditTargetName(item);
+
+  const targetSecondary = getAuditTargetSecondary(item);
 
   return (
     <div
@@ -178,6 +224,26 @@ function AuditDetailsDialog({ item, onClose }) {
                 {item.actor?.displayName || item.actor?.email || "-"}
               </dd>
             </div>
+
+            {targetName ? (
+              <div>
+                <dt className="text-xs font-semibold text-slate-500">
+                  {t("auditLogs.details.target")}
+                </dt>
+
+                <dd className="mt-1">
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                    {targetName}
+                  </p>
+
+                  {targetSecondary ? (
+                    <p className="mt-0.5 break-all text-xs text-slate-500 dark:text-slate-400">
+                      {targetSecondary}
+                    </p>
+                  ) : null}
+                </dd>
+              </div>
+            ) : null}
 
             <div>
               <dt className="text-xs font-semibold text-slate-500">
@@ -514,10 +580,30 @@ export function AuditLogsClient({ initialItems, initialPagination }) {
                       <ActionBadge action={item.action} />
                     </td>
 
-                    <td className="px-4 py-4 text-sm text-slate-700 dark:text-slate-300">
-                      {t(`auditLogs.entities.${item.entityType}`, {
-                        defaultValue: item.entityType,
-                      })}
+                    <td className="px-4 py-4">
+                      <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                        {t(`auditLogs.entities.${item.entityType}`, {
+                          defaultValue: item.entityType,
+                        })}
+                      </p>
+
+                      {getAuditTargetName(item) ? (
+                        <>
+                          <p className="mt-1 max-w-56 truncate text-xs font-semibold text-slate-600 dark:text-slate-300">
+                            {getAuditTargetName(item)}
+                          </p>
+
+                          {getAuditTargetSecondary(item) ? (
+                            <p className="mt-0.5 max-w-56 truncate text-[11px] text-slate-400">
+                              {getAuditTargetSecondary(item)}
+                            </p>
+                          ) : null}
+                        </>
+                      ) : (
+                        <p className="mt-1 max-w-56 truncate font-mono text-[11px] text-slate-400">
+                          {item.entityId || "—"}
+                        </p>
+                      )}
                     </td>
 
                     <td className="px-4 py-4 text-xs text-slate-500 dark:text-slate-400">

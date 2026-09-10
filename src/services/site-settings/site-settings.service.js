@@ -2,6 +2,8 @@ import "server-only";
 
 import { FieldValue } from "firebase-admin/firestore";
 
+import { USER_STATUSES } from "@/constants/admin";
+import { AUDIT_ACTIONS, AUDIT_ENTITY_TYPES } from "@/constants/audit";
 import { COLLECTIONS } from "@/constants/collections";
 import { InvalidRequestError } from "@/lib/api/errors";
 import { adminDb } from "@/lib/firebase/admin";
@@ -112,9 +114,15 @@ function mergeSiteSettings(defaults, stored = {}) {
         ...defaults.notifications.line,
         ...(stored.notifications?.line || {}),
 
-        targetIds: Array.isArray(stored.notifications?.line?.targetIds)
-          ? stored.notifications.line.targetIds
-          : defaults.notifications.line.targetIds,
+        /*
+         * ไม่ migrate targetIds เดิม เพราะเป็น LINE User/Group ID
+         * ที่กรอกเองและไม่สามารถยืนยันตัวตนกับ User ในระบบได้
+         */
+        recipientUserIds: Array.isArray(
+          stored.notifications?.line?.recipientUserIds,
+        )
+          ? stored.notifications.line.recipientUserIds
+          : defaults.notifications.line.recipientUserIds,
       },
     },
   };
@@ -142,10 +150,12 @@ function normalizeEmailList(values = []) {
   ];
 }
 
-function normalizeStringList(values = []) {
+function normalizeIdList(values = []) {
   return [
     ...new Set(
-      values.map((value) => String(value || "").trim()).filter(Boolean),
+      (Array.isArray(values) ? values : [])
+        .map((value) => String(value || "").trim())
+        .filter(Boolean),
     ),
   ];
 }
@@ -192,8 +202,8 @@ function normalizeSettings(settings) {
     normalized.notifications.email.recipients,
   );
 
-  normalized.notifications.line.targetIds = normalizeStringList(
-    normalized.notifications.line.targetIds,
+  normalized.notifications.line.recipientUserIds = normalizeIdList(
+    normalized.notifications.line.recipientUserIds,
   );
 
   return normalized;
@@ -217,6 +227,7 @@ function serializeTimestamp(value) {
 
 function sanitizeNotificationSettings(notifications = {}) {
   const email = notifications.email || {};
+
   const line = notifications.line || {};
 
   return {
@@ -230,8 +241,11 @@ function sanitizeNotificationSettings(notifications = {}) {
 
     email: {
       smtpHost: email.smtpHost || "",
+
       smtpPort: Number(email.smtpPort || 587),
+
       smtpSecure: Boolean(email.smtpSecure),
+
       smtpUsername: email.smtpUsername || "",
 
       smtpPassword: "",
@@ -250,7 +264,15 @@ function sanitizeNotificationSettings(notifications = {}) {
 
       tokenConfigured: Boolean(line.channelAccessTokenEncrypted),
 
-      targetIds: Array.isArray(line.targetIds) ? line.targetIds : [],
+      loginChannelId: line.loginChannelId || "",
+
+      loginChannelSecret: "",
+
+      loginSecretConfigured: Boolean(line.loginChannelSecretEncrypted),
+
+      recipientUserIds: Array.isArray(line.recipientUserIds)
+        ? line.recipientUserIds
+        : [],
     },
   };
 }
@@ -258,10 +280,15 @@ function sanitizeNotificationSettings(notifications = {}) {
 function sanitizeSettings(settings) {
   return {
     company: settings.company,
+
     contact: settings.contact,
+
     social: settings.social,
+
     branding: settings.branding,
+
     seo: settings.seo,
+
     integrations: settings.integrations,
 
     notifications: sanitizeNotificationSettings(settings.notifications),
@@ -277,6 +304,8 @@ function createNotificationWriteData({ notifications, existingNotifications }) {
 
   const submittedLineToken = notifications.line.channelAccessToken || "";
 
+  const submittedLineLoginSecret = notifications.line.loginChannelSecret || "";
+
   const smtpPasswordEncrypted = submittedSmtpPassword
     ? encryptEmailSecret(submittedSmtpPassword)
     : currentEmail.smtpPasswordEncrypted || "";
@@ -284,6 +313,10 @@ function createNotificationWriteData({ notifications, existingNotifications }) {
   const channelAccessTokenEncrypted = submittedLineToken
     ? encryptEmailSecret(submittedLineToken)
     : currentLine.channelAccessTokenEncrypted || "";
+
+  const loginChannelSecretEncrypted = submittedLineLoginSecret
+    ? encryptEmailSecret(submittedLineLoginSecret)
+    : currentLine.loginChannelSecretEncrypted || "";
 
   if (notifications.channels.email && !smtpPasswordEncrypted) {
     throw new InvalidRequestError(
@@ -294,6 +327,20 @@ function createNotificationWriteData({ notifications, existingNotifications }) {
   if (notifications.channels.line && !channelAccessTokenEncrypted) {
     throw new InvalidRequestError(
       "LINE channel access token is required before enabling LINE notifications",
+    );
+  }
+
+  const loginChannelId = notifications.line.loginChannelId || "";
+
+  if (loginChannelId && !loginChannelSecretEncrypted) {
+    throw new InvalidRequestError(
+      "LINE Login channel secret is required when a channel ID is configured",
+    );
+  }
+
+  if (!loginChannelId && loginChannelSecretEncrypted) {
+    throw new InvalidRequestError(
+      "LINE Login channel ID is required when a channel secret is configured",
     );
   }
 
@@ -327,7 +374,11 @@ function createNotificationWriteData({ notifications, existingNotifications }) {
     line: {
       channelAccessTokenEncrypted,
 
-      targetIds: normalizeStringList(notifications.line.targetIds),
+      loginChannelId,
+
+      loginChannelSecretEncrypted,
+
+      recipientUserIds: normalizeIdList(notifications.line.recipientUserIds),
     },
   };
 }
@@ -356,7 +407,9 @@ async function getSiteSettingsSnapshot() {
   if (!snapshot.exists) {
     return {
       reference,
+
       snapshot,
+
       data: null,
 
       settings: mergeSiteSettings(DEFAULT_SITE_SETTINGS, {}),
@@ -367,11 +420,45 @@ async function getSiteSettingsSnapshot() {
 
   return {
     reference,
+
     snapshot,
+
     data,
 
     settings: mergeSiteSettings(DEFAULT_SITE_SETTINGS, data),
   };
+}
+
+function isConnectedLineUser(userData) {
+  return (
+    userData?.status === USER_STATUSES.ACTIVE &&
+    userData?.lineConnection?.status === "connected" &&
+    Boolean(String(userData?.lineConnection?.userId || "").trim())
+  );
+}
+
+async function validateLineRecipientUsers({ transaction, userIds }) {
+  const normalizedUserIds = normalizeIdList(userIds);
+
+  if (!normalizedUserIds.length) {
+    return [];
+  }
+
+  const references = normalizedUserIds.map((userId) =>
+    adminDb.collection(COLLECTIONS.USERS).doc(userId),
+  );
+
+  const snapshots = await transaction.getAll(...references);
+
+  const snapshotsById = new Map(
+    snapshots.map((snapshot) => [snapshot.id, snapshot]),
+  );
+
+  return normalizedUserIds.filter((userId) => {
+    const snapshot = snapshotsById.get(userId);
+
+    return snapshot?.exists && isConnectedLineUser(snapshot.data());
+  });
 }
 
 export async function getSiteSettings() {
@@ -406,7 +493,23 @@ export async function getInternalNotificationSettings() {
       channelAccessToken: undefined,
 
       tokenConfigured: undefined,
+
+      loginChannelSecret: undefined,
+
+      loginSecretConfigured: undefined,
     },
+  };
+}
+
+export async function getInternalLineLoginSettings() {
+  const { settings } = await getSiteSettingsSnapshot();
+
+  const line = settings.notifications?.line || {};
+
+  return {
+    loginChannelId: line.loginChannelId || "",
+
+    loginChannelSecretEncrypted: line.loginChannelSecretEncrypted || "",
   };
 }
 
@@ -436,6 +539,26 @@ export async function updateSiteSettings({
 
       existingNotifications: existingData?.notifications || {},
     });
+
+    const validatedRecipientUserIds = await validateLineRecipientUsers({
+      transaction,
+
+      userIds: notificationWriteData.line.recipientUserIds,
+    });
+
+    if (
+      notificationWriteData.channels.line &&
+      !validatedRecipientUserIds.length
+    ) {
+      throw new InvalidRequestError(
+        "At least one active user connected to LINE is required before enabling LINE notifications",
+        {
+          field: "notifications.line.recipientUserIds",
+        },
+      );
+    }
+
+    notificationWriteData.line.recipientUserIds = validatedRecipientUserIds;
 
     const writeData = {
       company: normalizedSettings.company,
@@ -468,9 +591,11 @@ export async function updateSiteSettings({
     await writeAuditLog({
       actor,
 
-      action: snapshot.exists ? "SITE_SETTINGS_UPDATE" : "SITE_SETTINGS_CREATE",
+      action: snapshot.exists
+        ? AUDIT_ACTIONS.SITE_SETTINGS_UPDATE
+        : AUDIT_ACTIONS.SITE_SETTINGS_CREATE,
 
-      entityType: "siteSettings",
+      entityType: AUDIT_ENTITY_TYPES.SITE_SETTINGS,
 
       entityId: SITE_SETTINGS_DOCUMENT_ID,
 

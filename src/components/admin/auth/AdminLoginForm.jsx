@@ -63,9 +63,20 @@ export function AdminLoginForm() {
 
       const idToken = await userCredential.user.getIdToken(true);
 
-      await apiClient.post("/auth/session", {
+      const sessionResponse = await apiClient.post("/auth/session", {
         idToken,
       });
+
+      const mustChangePassword = Boolean(
+        sessionResponse?.data?.user?.mustChangePassword,
+      );
+
+      if (mustChangePassword) {
+        router.replace("/admin/change-password");
+        router.refresh();
+
+        return;
+      }
 
       await signOut(firebaseAuth);
 

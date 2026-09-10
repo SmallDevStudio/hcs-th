@@ -4,11 +4,14 @@ export const ADMIN_ROLES = Object.freeze({
   EDITOR: "editor",
 });
 
+export const ADMIN_ROLE_VALUES = Object.freeze(Object.values(ADMIN_ROLES));
+
 export const USER_STATUSES = Object.freeze({
   ACTIVE: "active",
-  SUSPENDED: "suspended",
-  INVITED: "invited",
+  INACTIVE: "inactive",
 });
+
+export const USER_STATUS_VALUES = Object.freeze(Object.values(USER_STATUSES));
 
 export const ADMIN_PERMISSIONS = Object.freeze({
   ALL: "*",
@@ -19,6 +22,11 @@ export const ADMIN_PERMISSIONS = Object.freeze({
   USERS_CREATE: "users.create",
   USERS_UPDATE: "users.update",
   USERS_DELETE: "users.delete",
+
+  GROUPS_VIEW: "groups.view",
+  GROUPS_CREATE: "groups.create",
+  GROUPS_UPDATE: "groups.update",
+  GROUPS_DELETE: "groups.delete",
 
   SITE_SETTINGS_VIEW: "siteSettings.view",
   SITE_SETTINGS_UPDATE: "siteSettings.update",
@@ -78,6 +86,10 @@ export const ADMIN_PERMISSIONS = Object.freeze({
   TRASH_DELETE_PERMANENTLY: "trash.deletePermanently",
 });
 
+export const ADMIN_PERMISSION_VALUES = Object.freeze(
+  Object.values(ADMIN_PERMISSIONS),
+);
+
 export const ROLE_PERMISSIONS = Object.freeze({
   [ADMIN_ROLES.SUPERADMIN]: [ADMIN_PERMISSIONS.ALL],
 
@@ -87,6 +99,12 @@ export const ROLE_PERMISSIONS = Object.freeze({
     ADMIN_PERMISSIONS.USERS_VIEW,
     ADMIN_PERMISSIONS.USERS_CREATE,
     ADMIN_PERMISSIONS.USERS_UPDATE,
+    ADMIN_PERMISSIONS.USERS_DELETE,
+
+    ADMIN_PERMISSIONS.GROUPS_VIEW,
+    ADMIN_PERMISSIONS.GROUPS_CREATE,
+    ADMIN_PERMISSIONS.GROUPS_UPDATE,
+    ADMIN_PERMISSIONS.GROUPS_DELETE,
 
     ADMIN_PERMISSIONS.SITE_SETTINGS_VIEW,
     ADMIN_PERMISSIONS.SITE_SETTINGS_UPDATE,
@@ -124,11 +142,6 @@ export const ROLE_PERMISSIONS = Object.freeze({
     ADMIN_PERMISSIONS.STANDARDS_CREATE,
     ADMIN_PERMISSIONS.STANDARDS_UPDATE,
     ADMIN_PERMISSIONS.STANDARDS_DELETE,
-
-    ADMIN_PERMISSIONS.DOWNLOADS_VIEW,
-    ADMIN_PERMISSIONS.DOWNLOADS_CREATE,
-    ADMIN_PERMISSIONS.DOWNLOADS_UPDATE,
-    ADMIN_PERMISSIONS.DOWNLOADS_DELETE,
 
     ADMIN_PERMISSIONS.MEDIA_VIEW,
     ADMIN_PERMISSIONS.MEDIA_UPLOAD,
@@ -168,8 +181,6 @@ export const ROLE_PERMISSIONS = Object.freeze({
 
     ADMIN_PERMISSIONS.STANDARDS_VIEW,
 
-    ADMIN_PERMISSIONS.DOWNLOADS_VIEW,
-
     ADMIN_PERMISSIONS.MEDIA_VIEW,
     ADMIN_PERMISSIONS.MEDIA_UPLOAD,
 
@@ -178,16 +189,72 @@ export const ROLE_PERMISSIONS = Object.freeze({
 });
 
 export function isAdminRole(role) {
-  return Object.values(ADMIN_ROLES).includes(role);
+  return ADMIN_ROLE_VALUES.includes(role);
+}
+
+export function isUserStatus(status) {
+  return USER_STATUS_VALUES.includes(status);
 }
 
 export function getRolePermissions(role) {
   return ROLE_PERMISSIONS[role] || [];
 }
 
+export function normalizePermissions(permissions) {
+  if (!Array.isArray(permissions)) {
+    return [];
+  }
+
+  return [
+    ...new Set(
+      permissions.filter(
+        (permission) =>
+          typeof permission === "string" &&
+          ADMIN_PERMISSION_VALUES.includes(permission),
+      ),
+    ),
+  ];
+}
+
+export function mergePermissions(...permissionLists) {
+  const permissions = permissionLists.flatMap((permissionList) =>
+    normalizePermissions(permissionList),
+  );
+
+  if (permissions.includes(ADMIN_PERMISSIONS.ALL)) {
+    return [ADMIN_PERMISSIONS.ALL];
+  }
+
+  return [...new Set(permissions)];
+}
+
 export function hasPermission(userPermissions = [], requiredPermission) {
+  if (!requiredPermission) {
+    return true;
+  }
+
+  const permissions = Array.isArray(userPermissions) ? userPermissions : [];
+
   return (
-    userPermissions.includes(ADMIN_PERMISSIONS.ALL) ||
-    userPermissions.includes(requiredPermission)
+    permissions.includes(ADMIN_PERMISSIONS.ALL) ||
+    permissions.includes(requiredPermission)
+  );
+}
+
+export function hasEveryPermission(
+  userPermissions = [],
+  requiredPermissions = [],
+) {
+  return requiredPermissions.every((permission) =>
+    hasPermission(userPermissions, permission),
+  );
+}
+
+export function hasAnyPermission(
+  userPermissions = [],
+  requiredPermissions = [],
+) {
+  return requiredPermissions.some((permission) =>
+    hasPermission(userPermissions, permission),
   );
 }

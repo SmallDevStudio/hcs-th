@@ -1,5 +1,8 @@
 import "server-only";
 
+import { USER_STATUSES } from "@/constants/admin";
+import { COLLECTIONS } from "@/constants/collections";
+import { adminDb } from "@/lib/firebase/admin";
 import {
   decryptEmailSecret,
   hasEncryptedEmailSecret,
@@ -9,7 +12,7 @@ const LINE_PUSH_MESSAGE_URL = "https://api.line.me/v2/bot/message/push";
 
 const LINE_MESSAGE_MAX_LENGTH = 5000;
 
-function normalizeTargetIds(values = []) {
+function normalizeUserIds(values = []) {
   return [
     ...new Set(
       (Array.isArray(values) ? values : [])
@@ -43,7 +46,100 @@ function normalizeMessage(message) {
   return normalizedMessage.slice(0, LINE_MESSAGE_MAX_LENGTH);
 }
 
-async function pushLineMessage({ channelAccessToken, targetId, message }) {
+function isConnectedLineUser(userData) {
+  return (
+    userData?.status === USER_STATUSES.ACTIVE &&
+    userData?.lineConnection?.status === "connected" &&
+    Boolean(String(userData?.lineConnection?.userId || "").trim())
+  );
+}
+
+function createRecipient({ userId, userData }) {
+  return {
+    userId,
+
+    displayName: userData.displayName || userData.email || "User",
+
+    email: userData.email || "",
+
+    lineUserId: userData.lineConnection.userId,
+  };
+}
+
+async function resolveLineRecipients(recipientUserIds) {
+  const userIds = normalizeUserIds(recipientUserIds);
+
+  if (!userIds.length) {
+    throw new Error("At least one LINE notification recipient is required");
+  }
+
+  const references = userIds.map((userId) =>
+    adminDb.collection(COLLECTIONS.USERS).doc(userId),
+  );
+
+  const snapshots = await adminDb.getAll(...references);
+
+  const snapshotsById = new Map(
+    snapshots.map((snapshot) => [snapshot.id, snapshot]),
+  );
+
+  const recipients = [];
+
+  const unavailableRecipients = [];
+
+  for (const userId of userIds) {
+    const snapshot = snapshotsById.get(userId);
+
+    if (!snapshot?.exists) {
+      unavailableRecipients.push({
+        userId,
+
+        displayName: "",
+
+        success: false,
+
+        error: "User account was not found",
+      });
+
+      continue;
+    }
+
+    const userData = snapshot.data();
+
+    if (!isConnectedLineUser(userData)) {
+      unavailableRecipients.push({
+        userId,
+
+        displayName: userData.displayName || userData.email || "",
+
+        success: false,
+
+        error:
+          userData.status !== USER_STATUSES.ACTIVE
+            ? "User account is inactive"
+            : "User is not connected to LINE",
+      });
+
+      continue;
+    }
+
+    recipients.push(
+      createRecipient({
+        userId,
+
+        userData,
+      }),
+    );
+  }
+
+  return {
+    recipients,
+
+    unavailableRecipients,
+  };
+}
+
+async function pushLineMessage({ channelAccessToken, lineUserId, message }) {
   const response = await fetch(LINE_PUSH_MESSAGE_URL, {
     method: "POST",
 
@@ -54,11 +150,12 @@ async function pushLineMessage({ channelAccessToken, targetId, message }) {
     },
 
     body: JSON.stringify({
-      to: targetId,
+      to: lineUserId,
 
       messages: [
         {
           type: "text",
+
           text: message,
         },
       ],
@@ -84,47 +181,63 @@ async function pushLineMessage({ channelAccessToken, targetId, message }) {
       responseMessage || `LINE Messaging API returned HTTP ${response.status}`,
     );
   }
-
-  return {
-    targetId,
-    success: true,
-  };
 }
 
 export async function sendLineNotification({ settings, message }) {
-  const targetIds = normalizeTargetIds(settings?.targetIds);
-
-  if (!targetIds.length) {
-    throw new Error("At least one LINE notification target is required");
-  }
-
   const channelAccessToken = getChannelAccessToken(settings);
 
   const normalizedMessage = normalizeMessage(message);
 
+  const { recipients, unavailableRecipients } = await resolveLineRecipients(
+    settings?.recipientUserIds,
+  );
+
+  if (!recipients.length) {
+    throw new Error(
+      unavailableRecipients[0]?.error ||
+        "No active users are connected to LINE",
+    );
+  }
+
   const settledResults = await Promise.allSettled(
-    targetIds.map((targetId) =>
+    recipients.map((recipient) =>
       pushLineMessage({
         channelAccessToken,
-        targetId,
+
+        lineUserId: recipient.lineUserId,
+
         message: normalizedMessage,
       }),
     ),
   );
 
-  const results = settledResults.map((result, index) => {
-    const targetId = targetIds[index];
+  const deliveryResults = settledResults.map((result, index) => {
+    const recipient = recipients[index];
 
     if (result.status === "fulfilled") {
-      return result.value;
+      return {
+        userId: recipient.userId,
+
+        displayName: recipient.displayName,
+
+        success: true,
+
+        error: "",
+      };
     }
 
     return {
-      targetId,
+      userId: recipient.userId,
+
+      displayName: recipient.displayName,
+
       success: false,
+
       error: result.reason?.message || "Unable to send LINE notification",
     };
   });
+
+  const results = [...deliveryResults, ...unavailableRecipients];
 
   const successfulResults = results.filter((result) => result.success);
 
@@ -140,6 +253,7 @@ export async function sendLineNotification({ settings, message }) {
     success: failedResults.length === 0,
 
     sentCount: successfulResults.length,
+
     failedCount: failedResults.length,
 
     results,
@@ -154,7 +268,9 @@ export async function sendLineTestNotification({ settings }) {
 
     message: [
       "HCS Thailand",
+
       "LINE notification configuration is working correctly.",
+
       `Tested at: ${testedAt}`,
     ].join("\n"),
   });

@@ -54,6 +54,7 @@ const adminEn = {
     messages: "Contact Messages",
 
     users: "Administrators",
+    userGroups: "Permission Groups",
     auditLogs: "Audit Logs",
     trash: "Trash",
     manual: "User Manual",
@@ -136,7 +137,7 @@ const adminEn = {
     errors: {
       invalidCredential: "The email or password is incorrect.",
       invalidEmail: "The email address is invalid.",
-      userDisabled: "This account has been suspended.",
+      userDisabled: "This account is inactive.",
       tooManyRequests:
         "There have been too many failed attempts. Please try again later.",
       network: "Unable to connect to the system. Please check your connection.",
@@ -156,6 +157,45 @@ const adminEn = {
       social: "Social Media",
       seo: "Default SEO",
       integrations: "Integrations",
+    },
+  },
+  forcedPassword: {
+    eyebrow: "Security Required",
+    title: "Create a New Password",
+    description:
+      "Your administrator requires you to change the initial password before accessing the system.",
+
+    account: "Administrator Account",
+
+    currentPassword: "Current Password",
+    newPassword: "New Password",
+    confirmPassword: "Confirm New Password",
+
+    showPassword: "Show password",
+    hidePassword: "Hide password",
+
+    requirements:
+      "Use at least 8 characters and choose a password that is different from your current password.",
+
+    submit: "Change Password",
+    submitting: "Changing Password...",
+
+    validation: {
+      currentRequired: "Please enter your current password.",
+      minimum: "New password must contain at least 8 characters.",
+      maximum: "New password must not exceed 128 characters.",
+      notMatched: "Password confirmation does not match.",
+      mustBeDifferent:
+        "New password must be different from the current password.",
+    },
+
+    errors: {
+      invalidCredential: "The current password is incorrect.",
+      weakPassword: "The new password is not secure enough.",
+      reauthenticationRequired:
+        "Please confirm your current password and try again.",
+      network: "Unable to connect to the system. Please check your connection.",
+      default: "Unable to change the password. Please try again.",
     },
   },
 };

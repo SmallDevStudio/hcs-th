@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { HtmlLangSync } from "@/components/common/HtmlLangSync";
 import { AdminShell } from "@/components/admin/layout/AdminShell";
 import { AdminI18nProvider } from "@/i18n/AdminI18nProvider";
@@ -11,6 +13,10 @@ function normalizeAdminLocale(locale) {
 
 export default async function AdminDashboardLayout({ children }) {
   const admin = await requireAdminPage();
+
+  if (admin.mustChangePassword) {
+    redirect("/admin/change-password");
+  }
 
   const locale = normalizeAdminLocale(admin.preferredLocale);
 

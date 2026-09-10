@@ -1,47 +1,12 @@
 import "server-only";
 
-import { AuthenticationError, AuthorizationError } from "@/lib/api/errors";
-import { verifySessionCookie } from "@/lib/firebase/auth-session";
-import { adminDb } from "@/lib/firebase/admin";
+import { USER_STATUSES, hasPermission, isAdminRole } from "@/constants/admin";
 import { COLLECTIONS } from "@/constants/collections";
-import { USER_STATUSES, isAdminRole } from "@/constants/admin";
-
-function serializeTimestamp(value) {
-  if (!value) {
-    return null;
-  }
-
-  if (typeof value.toDate === "function") {
-    return value.toDate().toISOString();
-  }
-
-  if (value instanceof Date) {
-    return value.toISOString();
-  }
-
-  return value;
-}
-
-function serializeAdminUser(data) {
-  return {
-    uid: data.uid,
-    email: data.email,
-    displayName: data.displayName || "",
-    photoURL: data.photoURL || null,
-
-    role: data.role,
-    permissions: Array.isArray(data.permissions) ? data.permissions : [],
-
-    status: data.status,
-    preferredLocale: data.preferredLocale || "th",
-
-    lastLoginAt: serializeTimestamp(data.lastLoginAt),
-
-    createdAt: serializeTimestamp(data.createdAt),
-
-    updatedAt: serializeTimestamp(data.updatedAt),
-  };
-}
+import { AuthenticationError, AuthorizationError } from "@/lib/api/errors";
+import { adminDb } from "@/lib/firebase/admin";
+import { verifySessionCookie } from "@/lib/firebase/auth-session";
+import { resolveUserAccess } from "@/services/user-groups/user-group-resolution.service";
+import { serializeUserData } from "@/services/users/user-serializer.service";
 
 export async function getCurrentAdmin() {
   const decodedToken = await verifySessionCookie({
@@ -71,10 +36,33 @@ export async function getCurrentAdmin() {
     return null;
   }
 
-  return serializeAdminUser({
-    ...userData,
-    uid: userSnapshot.id,
+  const resolvedAccess = await resolveUserAccess({
+    userData,
   });
+
+  const serializedUser = serializeUserData({
+    uid: userSnapshot.id,
+
+    data: userData,
+
+    resolvedAccess,
+  });
+
+  return {
+    ...serializedUser,
+
+    /*
+     * รักษา compatibility กับระบบเดิม:
+     * admin.permissions ต้องเป็นสิทธิ์ที่ใช้งานจริง
+     */
+    permissions: resolvedAccess.effectivePermissions,
+
+    directPermissions: resolvedAccess.directPermissions,
+
+    groupPermissions: resolvedAccess.groupPermissions,
+
+    effectivePermissions: resolvedAccess.effectivePermissions,
+  };
 }
 
 export async function requireCurrentAdmin() {
@@ -90,11 +78,13 @@ export async function requireCurrentAdmin() {
 export async function requirePermission(requiredPermission) {
   const admin = await requireCurrentAdmin();
 
-  const canAccess =
-    admin.permissions.includes("*") ||
-    admin.permissions.includes(requiredPermission);
+  if (admin.mustChangePassword) {
+    throw new AuthorizationError(
+      "Password change is required before continuing",
+    );
+  }
 
-  if (!canAccess) {
+  if (!hasPermission(admin.permissions, requiredPermission)) {
     throw new AuthorizationError();
   }
 

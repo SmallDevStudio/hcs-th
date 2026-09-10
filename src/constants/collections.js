@@ -1,5 +1,7 @@
 export const COLLECTIONS = Object.freeze({
   USERS: "users",
+  USER_GROUPS: "userGroups",
+
   SITE_SETTINGS: "siteSettings",
   PAGES: "pages",
   HOME_SECTIONS: "homeSections",

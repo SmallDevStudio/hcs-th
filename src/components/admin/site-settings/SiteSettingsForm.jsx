@@ -83,6 +83,7 @@ function settingsToFormValues(settings) {
 
       en: {
         ...settings.seo.en,
+
         keywords: Array.isArray(settings.seo.en.keywords)
           ? settings.seo.en.keywords.join(", ")
           : settings.seo.en.keywords || "",
@@ -90,6 +91,7 @@ function settingsToFormValues(settings) {
 
       th: {
         ...settings.seo.th,
+
         keywords: Array.isArray(settings.seo.th.keywords)
           ? settings.seo.th.keywords.join(", ")
           : settings.seo.th.keywords || "",
@@ -99,6 +101,7 @@ function settingsToFormValues(settings) {
     integrations: {
       ...settings.integrations,
     },
+
     notifications: {
       channels: {
         ...settings.notifications.channels,
@@ -119,9 +122,13 @@ function settingsToFormValues(settings) {
 
         channelAccessToken: "",
 
-        targetIds: Array.isArray(settings.notifications.line.targetIds)
-          ? settings.notifications.line.targetIds.join("\n")
-          : settings.notifications.line.targetIds || "",
+        loginChannelSecret: "",
+
+        recipientUserIds: Array.isArray(
+          settings.notifications.line.recipientUserIds,
+        )
+          ? settings.notifications.line.recipientUserIds
+          : [],
       },
     },
   };

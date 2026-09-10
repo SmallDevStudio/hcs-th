@@ -87,7 +87,12 @@ function formatActionFallback(action = "") {
     .join(" ");
 }
 
-export function AdminDashboardContent({ admin, statistics, recentActivity }) {
+export function AdminDashboardContent({
+  admin,
+  statistics,
+  recentActivity,
+  canViewAuditLogs = false,
+}) {
   const { t, i18n } = useTranslation("admin");
 
   const adminName = admin.displayName || admin.email;
@@ -178,7 +183,12 @@ export function AdminDashboardContent({ admin, statistics, recentActivity }) {
         </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[0.75fr_1.25fr]">
+      <div
+        className={[
+          "grid gap-6",
+          canViewAuditLogs ? "xl:grid-cols-[0.75fr_1.25fr]" : "xl:grid-cols-1",
+        ].join(" ")}
+      >
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-[#071522] sm:p-6">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0979c4] dark:text-sky-400">
             {t("dashboard.quickActions.eyebrow")}
@@ -210,63 +220,65 @@ export function AdminDashboardContent({ admin, statistics, recentActivity }) {
           </div>
         </section>
 
-        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-[#071522]">
-          <header className="flex items-end justify-between gap-5 border-b border-slate-200 p-5 dark:border-slate-800 sm:p-6">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0979c4] dark:text-sky-400">
-                {t("dashboard.recentActivity.eyebrow")}
-              </p>
+        {canViewAuditLogs ? (
+          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-[#071522]">
+            <header className="flex items-end justify-between gap-5 border-b border-slate-200 p-5 dark:border-slate-800 sm:p-6">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0979c4] dark:text-sky-400">
+                  {t("dashboard.recentActivity.eyebrow")}
+                </p>
 
-              <h2 className="mt-1 text-lg font-extrabold text-slate-950 dark:text-white">
-                {t("dashboard.recentActivity.title")}
-              </h2>
-            </div>
+                <h2 className="mt-1 text-lg font-extrabold text-slate-950 dark:text-white">
+                  {t("dashboard.recentActivity.title")}
+                </h2>
+              </div>
 
-            <Link
-              href="/admin/audit-logs"
-              className="text-xs font-bold text-[#0979c4] transition hover:underline dark:text-sky-400"
-            >
-              {t("dashboard.recentActivity.viewAll")}
-            </Link>
-          </header>
+              <Link
+                href="/admin/audit-logs"
+                className="text-xs font-bold text-[#0979c4] transition hover:underline dark:text-sky-400"
+              >
+                {t("dashboard.recentActivity.viewAll")}
+              </Link>
+            </header>
 
-          {recentActivity.length ? (
-            <div className="divide-y divide-slate-200 dark:divide-slate-800">
-              {recentActivity.map((activity) => (
-                <article
-                  key={activity.id}
-                  className="flex items-start gap-3 px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-slate-900/60 sm:px-6"
-                >
-                  <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#0979c4]/10 text-[#0979c4] dark:bg-[#0979c4]/20 dark:text-sky-300">
-                    <FiActivity aria-hidden="true" />
-                  </span>
+            {recentActivity.length ? (
+              <div className="divide-y divide-slate-200 dark:divide-slate-800">
+                {recentActivity.map((activity) => (
+                  <article
+                    key={activity.id}
+                    className="flex items-start gap-3 px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-slate-900/60 sm:px-6"
+                  >
+                    <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#0979c4]/10 text-[#0979c4] dark:bg-[#0979c4]/20 dark:text-sky-300">
+                      <FiActivity aria-hidden="true" />
+                    </span>
 
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                      {t(`auditLogs.actions.${activity.action}`, {
-                        defaultValue: formatActionFallback(activity.action),
-                      })}
-                    </p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                        {t(`auditLogs.actions.${activity.action}`, {
+                          defaultValue: formatActionFallback(activity.action),
+                        })}
+                      </p>
 
-                    <p className="mt-1 truncate text-xs text-slate-500 dark:text-slate-400">
-                      {activity.actor?.displayName ||
-                        activity.actor?.email ||
-                        t("dashboard.recentActivity.unknownUser")}
-                    </p>
-                  </div>
+                      <p className="mt-1 truncate text-xs text-slate-500 dark:text-slate-400">
+                        {activity.actor?.displayName ||
+                          activity.actor?.email ||
+                          t("dashboard.recentActivity.unknownUser")}
+                      </p>
+                    </div>
 
-                  <time className="shrink-0 text-right text-[11px] leading-5 text-slate-400">
-                    {formatDate(activity.createdAt, i18n.resolvedLanguage)}
-                  </time>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <div className="px-6 py-12 text-center text-sm text-slate-500 dark:text-slate-400">
-              {t("dashboard.recentActivity.empty")}
-            </div>
-          )}
-        </section>
+                    <time className="shrink-0 text-right text-[11px] leading-5 text-slate-400">
+                      {formatDate(activity.createdAt, i18n.resolvedLanguage)}
+                    </time>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="px-6 py-12 text-center text-sm text-slate-500 dark:text-slate-400">
+                {t("dashboard.recentActivity.empty")}
+              </div>
+            )}
+          </section>
+        ) : null}
       </div>
     </div>
   );

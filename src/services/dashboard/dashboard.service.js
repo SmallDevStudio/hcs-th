@@ -51,27 +51,34 @@ async function getActiveCollectionCount({ collection, entityType }) {
   return Math.max(0, totalCount - trashCount);
 }
 
-export async function getAdminDashboardData() {
-  const [products, categories, projects, media, auditResult] =
-    await Promise.all([
-      getActiveCollectionCount(DASHBOARD_COLLECTIONS.products),
+export async function getAdminDashboardData({
+  includeRecentActivity = false,
+} = {}) {
+  const [products, categories, projects, media] = await Promise.all([
+    getActiveCollectionCount(DASHBOARD_COLLECTIONS.products),
 
-      getActiveCollectionCount(DASHBOARD_COLLECTIONS.categories),
+    getActiveCollectionCount(DASHBOARD_COLLECTIONS.categories),
 
-      getActiveCollectionCount(DASHBOARD_COLLECTIONS.projects),
+    getActiveCollectionCount(DASHBOARD_COLLECTIONS.projects),
 
-      getActiveCollectionCount(DASHBOARD_COLLECTIONS.media),
+    getActiveCollectionCount(DASHBOARD_COLLECTIONS.media),
+  ]);
 
-      getAuditLogs({
-        limit: 6,
-        cursor: undefined,
-        action: undefined,
-        entityType: undefined,
-        actorUid: undefined,
-        dateFrom: undefined,
-        dateTo: undefined,
-      }),
-    ]);
+  let recentActivity = [];
+
+  if (includeRecentActivity) {
+    const auditResult = await getAuditLogs({
+      limit: 6,
+      cursor: undefined,
+      action: undefined,
+      entityType: undefined,
+      actorUid: undefined,
+      dateFrom: undefined,
+      dateTo: undefined,
+    });
+
+    recentActivity = auditResult.items;
+  }
 
   return {
     statistics: {
@@ -81,6 +88,6 @@ export async function getAdminDashboardData() {
       media,
     },
 
-    recentActivity: auditResult.items,
+    recentActivity,
   };
 }

@@ -61,6 +61,15 @@ import aboutTh from "@/i18n/locales/public/about/th";
 import messagesEn from "@/i18n/locales/admin/messages/en";
 import messagesTh from "@/i18n/locales/admin/messages/th";
 
+import accountEn from "@/i18n/locales/admin/account/en";
+import accountTh from "@/i18n/locales/admin/account/th";
+
+import usersEn from "@/i18n/locales/admin/users/en";
+import usersTh from "@/i18n/locales/admin/users/th";
+
+import userGroupsEn from "@/i18n/locales/admin/user-groups/en";
+import userGroupsTh from "@/i18n/locales/admin/user-groups/th";
+
 export const i18nResources = {
   en: {
     public: {
@@ -89,6 +98,9 @@ export const i18nResources = {
       siteSettings: siteSettingsEn,
       trash: trashEn,
       messages: messagesEn,
+      account: accountEn,
+      users: usersEn,
+      userGroups: userGroupsEn,
     },
   },
 
@@ -119,6 +131,9 @@ export const i18nResources = {
       siteSettings: siteSettingsTh,
       trash: trashTh,
       messages: messagesTh,
+      account: accountTh,
+      users: usersTh,
+      userGroups: userGroupsTh,
     },
   },
 };

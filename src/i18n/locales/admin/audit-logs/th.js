@@ -31,27 +31,93 @@ const auditLogsTh = {
   actions: {
     AUTH_LOGIN: "เข้าสู่ระบบ",
     AUTH_LOGOUT: "ออกจากระบบ",
+
     USER_CREATE: "สร้างผู้ดูแลระบบ",
     USER_UPDATE: "แก้ไขผู้ดูแลระบบ",
-    USER_DELETE: "ลบผู้ดูแลระบบ",
+    USER_DELETE: "ลบผู้ดูแลระบบถาวร",
     USER_RESTORE: "กู้คืนผู้ดูแลระบบ",
-    USER_PREFERENCE_UPDATE: "แก้ไขการตั้งค่า",
+    USER_PREFERENCE_UPDATE: "แก้ไขการตั้งค่าบัญชี",
+    USER_PASSWORD_CHANGE: "เปลี่ยนรหัสผ่านของตนเอง",
+    USER_PASSWORD_SET: "ตั้งรหัสผ่านให้ผู้ดูแลระบบ",
+    USER_PASSWORD_RESET_REQUEST: "ร้องขอรีเซ็ตรหัสผ่าน",
+    USER_LINE_CONNECT: "เชื่อมต่อบัญชี LINE",
+    USER_LINE_DISCONNECT: "ยกเลิกการเชื่อมต่อบัญชี LINE",
+
+    GROUP_CREATE: "สร้างกลุ่มสิทธิ์",
+    GROUP_UPDATE: "แก้ไขกลุ่มสิทธิ์",
+    GROUP_DELETE: "ลบกลุ่มสิทธิ์",
+
     SITE_SETTINGS_CREATE: "สร้างข้อมูลเว็บไซต์",
     SITE_SETTINGS_UPDATE: "แก้ไขข้อมูลเว็บไซต์",
+
+    PAGE_CREATE: "สร้างหน้าเว็บไซต์",
+    PAGE_UPDATE: "แก้ไขหน้าเว็บไซต์",
+    PAGE_PUBLISH: "เผยแพร่หน้าเว็บไซต์",
+    PAGE_UNPUBLISH: "ยกเลิกเผยแพร่หน้าเว็บไซต์",
+    PAGE_DELETE: "ลบหน้าเว็บไซต์",
+    PAGE_RESTORE: "กู้คืนหน้าเว็บไซต์",
+
     HOME_SECTION_CREATE: "สร้างสไลด์ Hero หน้าแรก",
     HOME_SECTION_UPDATE: "แก้ไขสไลด์ Hero หน้าแรก",
     HOME_SECTION_PUBLISH: "เผยแพร่สไลด์ Hero หน้าแรก",
     HOME_SECTION_UNPUBLISH: "ยกเลิกเผยแพร่สไลด์ Hero หน้าแรก",
     HOME_SECTION_DELETE: "ลบสไลด์ Hero หน้าแรก",
     HOME_SECTION_RESTORE: "กู้คืนสไลด์ Hero หน้าแรก",
-    MESSAGE_UPDATE: "อัปเดตข้อความติดต่อ",
+
+    CATEGORY_CREATE: "สร้างหมวดหมู่สินค้า",
+    CATEGORY_UPDATE: "แก้ไขหมวดหมู่สินค้า",
+    CATEGORY_DELETE: "ลบหมวดหมู่สินค้า",
+    CATEGORY_RESTORE: "กู้คืนหมวดหมู่สินค้า",
+
+    PRODUCT_CREATE: "สร้างสินค้า",
+    PRODUCT_UPDATE: "แก้ไขสินค้า",
+    PRODUCT_PUBLISH: "เผยแพร่สินค้า",
+    PRODUCT_UNPUBLISH: "ยกเลิกเผยแพร่สินค้า",
+    PRODUCT_DELETE: "ลบสินค้า",
+    PRODUCT_RESTORE: "กู้คืนสินค้า",
+
+    SOLUTION_CREATE: "สร้างโซลูชัน",
+    SOLUTION_UPDATE: "แก้ไขโซลูชัน",
+    SOLUTION_PUBLISH: "เผยแพร่โซลูชัน",
+    SOLUTION_UNPUBLISH: "ยกเลิกเผยแพร่โซลูชัน",
+    SOLUTION_DELETE: "ลบโซลูชัน",
+    SOLUTION_RESTORE: "กู้คืนโซลูชัน",
+
+    PROJECT_CREATE: "สร้างโครงการ",
+    PROJECT_UPDATE: "แก้ไขโครงการ",
+    PROJECT_PUBLISH: "เผยแพร่โครงการ",
+    PROJECT_UNPUBLISH: "ยกเลิกเผยแพร่โครงการ",
+    PROJECT_DELETE: "ลบโครงการ",
+    PROJECT_RESTORE: "กู้คืนโครงการ",
+
+    STANDARD_CREATE: "สร้างมาตรฐาน",
+    STANDARD_UPDATE: "แก้ไขมาตรฐาน",
+    STANDARD_DELETE: "ลบมาตรฐาน",
+    STANDARD_RESTORE: "กู้คืนมาตรฐาน",
+
+    DOWNLOAD_CREATE: "สร้างไฟล์ดาวน์โหลด",
+    DOWNLOAD_UPDATE: "แก้ไขไฟล์ดาวน์โหลด",
+    DOWNLOAD_DELETE: "ลบไฟล์ดาวน์โหลด",
+    DOWNLOAD_RESTORE: "กู้คืนไฟล์ดาวน์โหลด",
+
+    MEDIA_UPLOAD: "อัปโหลดไฟล์สื่อ",
+    MEDIA_UPDATE: "แก้ไขไฟล์สื่อ",
+    MEDIA_DELETE: "ลบไฟล์สื่อ",
+    MEDIA_RESTORE: "กู้คืนไฟล์สื่อ",
+    MEDIA_CLEANUP: "ล้างไฟล์สื่อ",
+
+    MESSAGE_UPDATE: "แก้ไขข้อความติดต่อ",
     MESSAGE_DELETE: "ลบข้อความติดต่อ",
     MESSAGE_RESTORE: "กู้คืนข้อความติดต่อ",
+
+    TRASH_RESTORE: "กู้คืนข้อมูลที่ถูกลบ",
+    TRASH_DELETE_PERMANENTLY: "ลบข้อมูลถาวร",
   },
 
   entities: {
     auth: "การเข้าสู่ระบบ",
     user: "ผู้ดูแลระบบ",
+    userGroup: "กลุ่มสิทธิ์",
     siteSettings: "ข้อมูลเว็บไซต์",
     homeSection: "สไลด์ Hero หน้าแรก",
     page: "หน้าเว็บไซต์",
@@ -80,6 +146,7 @@ const auditLogsTh = {
     after: "ข้อมูลใหม่",
     noChanges: "ไม่มีรายละเอียดการเปลี่ยนแปลง",
     close: "ปิด",
+    target: "ข้อมูลเป้าหมาย",
   },
 
   pagination: {

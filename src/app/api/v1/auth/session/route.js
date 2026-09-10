@@ -1,4 +1,8 @@
 import { FieldValue } from "firebase-admin/firestore";
+
+import { USER_STATUSES, isAdminRole } from "@/constants/admin";
+import { AUDIT_ACTIONS, AUDIT_ENTITY_TYPES } from "@/constants/audit";
+import { COLLECTIONS } from "@/constants/collections";
 import {
   AuthenticationError,
   AuthorizationError,
@@ -12,8 +16,9 @@ import {
   verifySessionCookie,
 } from "@/lib/firebase/auth-session";
 import { createSessionSchema } from "@/modules/auth/schemas/session.schema";
-import { COLLECTIONS } from "@/constants/collections";
-import { USER_STATUSES, isAdminRole } from "@/constants/admin";
+import { writeAuditLog } from "@/services/audit/audit.service";
+import { resolveUserAccess } from "@/services/user-groups/user-group-resolution.service";
+import { serializeUserData } from "@/services/users/user-serializer.service";
 
 function getRequestMetadata(request) {
   const forwardedFor = request.headers.get("x-forwarded-for");
@@ -27,26 +32,34 @@ function getRequestMetadata(request) {
 
   return {
     ipAddress,
+
     userAgent,
   };
 }
 
-function createPublicAdminData(uid, userData) {
-  return {
+function createSessionAdminData({ uid, userData, resolvedAccess }) {
+  const serializedUser = serializeUserData({
     uid,
-    email: userData.email,
-    displayName: userData.displayName || "",
-    photoURL: userData.photoURL || null,
 
-    role: userData.role,
+    data: userData,
 
-    permissions: Array.isArray(userData.permissions)
-      ? userData.permissions
-      : [],
+    resolvedAccess,
+  });
 
-    status: userData.status,
+  return {
+    ...serializedUser,
 
-    preferredLocale: userData.preferredLocale || "th",
+    /*
+     * permissions ใช้ effective permissions
+     * เพื่อให้ component เดิมทำงานต่อได้
+     */
+    permissions: resolvedAccess.effectivePermissions,
+
+    directPermissions: resolvedAccess.directPermissions,
+
+    groupPermissions: resolvedAccess.groupPermissions,
+
+    effectivePermissions: resolvedAccess.effectivePermissions,
   };
 }
 
@@ -100,11 +113,21 @@ export async function POST(request) {
       throw new AuthorizationError("This account has been deleted");
     }
 
+    const resolvedAccess = await resolveUserAccess({
+      userData,
+    });
+
+    const adminUser = createSessionAdminData({
+      uid: decodedToken.uid,
+
+      userData,
+
+      resolvedAccess,
+    });
+
     await createAndSetSession(idToken);
 
     const requestMetadata = getRequestMetadata(request);
-
-    const auditReference = adminDb.collection(COLLECTIONS.AUDIT_LOGS).doc();
 
     const batch = adminDb.batch();
 
@@ -120,35 +143,32 @@ export async function POST(request) {
       updatedBy: decodedToken.uid,
     });
 
-    batch.set(auditReference, {
-      actor: {
-        uid: decodedToken.uid,
+    await writeAuditLog({
+      actor: adminUser,
 
-        email: userData.email || authUser.email || null,
+      action: AUDIT_ACTIONS.AUTH_LOGIN,
 
-        displayName: userData.displayName || authUser.displayName || "",
-      },
+      entityType: AUDIT_ENTITY_TYPES.AUTH,
 
-      action: "AUTH_LOGIN",
-      entityType: "session",
       entityId: decodedToken.uid,
 
-      description: "Admin signed in",
-
-      before: null,
+      before: {
+        status: "signed_out",
+      },
 
       after: {
         status: "authenticated",
+
         role: userData.role,
       },
 
       metadata: {
-        ipAddress: requestMetadata.ipAddress,
+        ...requestMetadata,
 
-        userAgent: requestMetadata.userAgent,
+        description: "Admin signed in",
       },
 
-      createdAt: FieldValue.serverTimestamp(),
+      batch,
     });
 
     await batch.commit();
@@ -157,7 +177,7 @@ export async function POST(request) {
       message: "Signed in successfully",
 
       data: {
-        user: createPublicAdminData(decodedToken.uid, userData),
+        user: adminUser,
       },
     });
   });
@@ -181,20 +201,24 @@ export async function DELETE(request) {
 
       const requestMetadata = getRequestMetadata(request);
 
-      await adminDb.collection(COLLECTIONS.AUDIT_LOGS).add({
-        actor: {
-          uid: decodedToken.uid,
+      const actor = {
+        uid: decodedToken.uid,
 
-          email: userData?.email || decodedToken.email || null,
+        email: userData?.email || decodedToken.email || "",
 
-          displayName: userData?.displayName || decodedToken.name || "",
-        },
+        displayName: userData?.displayName || decodedToken.name || "",
 
-        action: "AUTH_LOGOUT",
-        entityType: "session",
+        role: userData?.role || "",
+      };
+
+      await writeAuditLog({
+        actor,
+
+        action: AUDIT_ACTIONS.AUTH_LOGOUT,
+
+        entityType: AUDIT_ENTITY_TYPES.AUTH,
+
         entityId: decodedToken.uid,
-
-        description: "Admin signed out",
 
         before: {
           status: "authenticated",
@@ -205,17 +229,16 @@ export async function DELETE(request) {
         },
 
         metadata: {
-          ipAddress: requestMetadata.ipAddress,
+          ...requestMetadata,
 
-          userAgent: requestMetadata.userAgent,
+          description: "Admin signed out",
         },
-
-        createdAt: FieldValue.serverTimestamp(),
       });
     }
 
     return apiSuccess({
       message: "Signed out successfully",
+
       data: null,
     });
   });

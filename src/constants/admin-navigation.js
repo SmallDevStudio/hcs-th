@@ -3,7 +3,6 @@ import {
   FiBookOpen,
   FiBox,
   FiBriefcase,
-  FiFileText,
   FiFolder,
   FiGrid,
   FiHome,
@@ -13,6 +12,7 @@ import {
   FiSettings,
   FiShield,
   FiTrash2,
+  FiUserCheck,
   FiUsers,
 } from "react-icons/fi";
 
@@ -37,13 +37,6 @@ export const ADMIN_NAVIGATION = [
         labelKey: "navigation.home",
         href: "/admin/home",
         icon: FiHome,
-        permission: ADMIN_PERMISSIONS.PAGES_VIEW,
-      },
-      {
-        key: "pages",
-        labelKey: "navigation.pages",
-        href: "/admin/pages",
-        icon: FiFileText,
         permission: ADMIN_PERMISSIONS.PAGES_VIEW,
       },
       {
@@ -115,12 +108,12 @@ export const ADMIN_NAVIGATION = [
   },
 
   {
-    id: "communication",
+    key: "communication",
     labelKey: "navigation.groups.communication",
 
     items: [
       {
-        id: "messages",
+        key: "messages",
         labelKey: "navigation.messages",
         href: "/admin/messages",
         icon: FiInbox,
@@ -140,6 +133,13 @@ export const ADMIN_NAVIGATION = [
         href: "/admin/users",
         icon: FiUsers,
         permission: ADMIN_PERMISSIONS.USERS_VIEW,
+      },
+      {
+        key: "user-groups",
+        labelKey: "navigation.userGroups",
+        href: "/admin/user-groups",
+        icon: FiUserCheck,
+        permission: ADMIN_PERMISSIONS.GROUPS_VIEW,
       },
       {
         key: "audit-logs",

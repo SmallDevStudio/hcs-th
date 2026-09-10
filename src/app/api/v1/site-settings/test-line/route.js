@@ -6,6 +6,7 @@ import { sendLineTestNotification } from "@/services/notifications/line-notifica
 import { getInternalNotificationSettings } from "@/services/site-settings/site-settings.service";
 
 export const runtime = "nodejs";
+
 export const dynamic = "force-dynamic";
 
 export async function POST() {
@@ -23,11 +24,11 @@ export async function POST() {
     }
 
     if (
-      !Array.isArray(lineSettings.targetIds) ||
-      !lineSettings.targetIds.length
+      !Array.isArray(lineSettings.recipientUserIds) ||
+      !lineSettings.recipientUserIds.length
     ) {
       throw new InvalidRequestError(
-        "At least one LINE user or group ID is required",
+        "At least one connected LINE user must be selected",
       );
     }
 
@@ -38,7 +39,7 @@ export async function POST() {
     return apiSuccess({
       message:
         result.failedCount > 0
-          ? "LINE test notification was sent to some targets"
+          ? "LINE test notification was delivered to some selected users"
           : "LINE test notification sent successfully",
 
       data: {
