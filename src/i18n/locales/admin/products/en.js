@@ -60,6 +60,53 @@ const productsEn = {
     inactive: "Inactive",
   },
 
+  quickStatus: "Change status for {{name}}",
+
+  results: {
+    summary: "{{total}} products found",
+    range: "Showing {{start}}-{{end}} of {{total}} products",
+  },
+
+  pagination: {
+    perPage: "Products per page",
+    page: "Page {{page}} of {{totalPages}}",
+    previous: "Previous",
+    next: "Next",
+  },
+
+  bulk: {
+    selected: "{{count}} products selected",
+    clearSelection: "Clear selection",
+    selectPage: "Select all products on this page",
+    selectProduct: "Select {{name}}",
+
+    actions: {
+      publish: "Publish",
+      unpublish: "Unpublish",
+      deactivate: "Set Inactive",
+      delete: "Move to Trash",
+    },
+
+    confirm: {
+      publish: {
+        title: "Publish selected products?",
+        text: "Publish {{count}} selected products. Incomplete products will be reported and left unchanged.",
+      },
+      unpublish: {
+        title: "Unpublish selected products?",
+        text: "Move {{count}} selected products back to draft status.",
+      },
+      deactivate: {
+        title: "Deactivate selected products?",
+        text: "Set {{count}} selected products to inactive status.",
+      },
+      delete: {
+        title: "Move selected products to trash?",
+        text: "Move {{count}} selected products to trash. They can be restored later.",
+      },
+    },
+  },
+
   table: {
     product: "Product",
     model: "Model / Reference",
@@ -294,6 +341,17 @@ const productsEn = {
     deleteSuccess: "Product moved to trash successfully.",
 
     deleteFailed: "Unable to move the product to trash.",
+
+    statusSuccess: "Product status updated successfully.",
+
+    statusFailed: "Unable to update product status.",
+
+    bulkSuccess: "Updated {{count}} products successfully.",
+
+    bulkPartial:
+      "{{success}} products updated; {{failed}} products could not be updated.",
+
+    bulkFailed: "Unable to update the selected products.",
 
     orderSuccess: "Product order saved successfully.",
 

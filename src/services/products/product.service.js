@@ -843,10 +843,24 @@ export async function updateProduct({
 
     transaction.update(reference, updates);
 
+    let auditAction = AUDIT_ACTIONS.PRODUCT_UPDATE;
+
+    if (
+      before.status !== PRODUCT_STATUSES.PUBLISHED &&
+      product.status === PRODUCT_STATUSES.PUBLISHED
+    ) {
+      auditAction = AUDIT_ACTIONS.PRODUCT_PUBLISH;
+    } else if (
+      before.status === PRODUCT_STATUSES.PUBLISHED &&
+      product.status !== PRODUCT_STATUSES.PUBLISHED
+    ) {
+      auditAction = AUDIT_ACTIONS.PRODUCT_UNPUBLISH;
+    }
+
     await writeAuditLog({
       actor,
 
-      action: AUDIT_ACTIONS.PRODUCT_UPDATE,
+      action: auditAction,
 
       entityType: AUDIT_ENTITY_TYPES.PRODUCT,
 
@@ -883,6 +897,69 @@ export async function deleteProduct({
     actor,
     requestMetadata,
   });
+}
+
+export async function bulkUpdateProducts({
+  action,
+  productIds,
+  actor,
+  requestMetadata = {},
+}) {
+  const operationId = randomUUID();
+
+  const succeeded = [];
+  const failed = [];
+
+  for (const productId of productIds) {
+    try {
+      const metadata = {
+        ...requestMetadata,
+        bulkAction: action,
+        bulkOperationId: operationId,
+      };
+
+      if (action === "delete") {
+        await deleteProduct({
+          productId,
+          actor,
+          requestMetadata: metadata,
+        });
+      } else {
+        const statusByAction = {
+          publish: PRODUCT_STATUSES.PUBLISHED,
+          unpublish: PRODUCT_STATUSES.DRAFT,
+          deactivate: PRODUCT_STATUSES.INACTIVE,
+        };
+
+        await updateProduct({
+          productId,
+          input: {
+            status: statusByAction[action],
+          },
+          actor,
+          requestMetadata: metadata,
+        });
+      }
+
+      succeeded.push(productId);
+    } catch (error) {
+      failed.push({
+        productId,
+        message: error?.message || "Product operation failed",
+        details: error?.details || null,
+      });
+    }
+  }
+
+  return {
+    operationId,
+    action,
+    requestedCount: productIds.length,
+    successCount: succeeded.length,
+    failedCount: failed.length,
+    succeeded,
+    failed,
+  };
 }
 
 export async function reorderProducts({ items, actor, requestMetadata = {} }) {

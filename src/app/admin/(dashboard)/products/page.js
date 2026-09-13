@@ -15,24 +15,44 @@ export default async function AdminProductsPage() {
 
   const [productsResult, categoriesResult] = await Promise.all([
     getProducts({
-      limit: 25,
+      limit: 20,
+
       cursor: undefined,
+
       status: undefined,
+
       categoryId: undefined,
+
       productTypeSlug: undefined,
+
       standard: undefined,
+
       featured: undefined,
+
       showOnHome: undefined,
+
       fireRated: undefined,
+
       search: undefined,
+
+      /*
+       * Initial render ต้องส่งยอดรวม
+       * ให้ ProductsClient ตั้งแต่หน้าแรก
+       */
+      includeTotal: true,
     }),
 
     getCategories({
       limit: 100,
+
       cursor: undefined,
+
       status: undefined,
+
       featured: undefined,
+
       showOnHome: undefined,
+
       search: undefined,
     }),
   ]);
@@ -53,6 +73,10 @@ export default async function AdminProductsPage() {
       canDelete={hasPermission(
         admin.permissions,
         ADMIN_PERMISSIONS.PRODUCTS_DELETE,
+      )}
+      canPublish={hasPermission(
+        admin.permissions,
+        ADMIN_PERMISSIONS.PRODUCTS_PUBLISH,
       )}
     />
   );

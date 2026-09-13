@@ -64,7 +64,15 @@ export async function PATCH(request, { params }) {
 
     const payload = updateProductSchema.parse(await request.json());
 
-    if (payload.status === PRODUCT_STATUSES.PUBLISHED) {
+    const currentProduct =
+      payload.status !== undefined ? await getProductById(productId) : null;
+
+    if (
+      payload.status === PRODUCT_STATUSES.PUBLISHED ||
+      (currentProduct?.status === PRODUCT_STATUSES.PUBLISHED &&
+        payload.status !== undefined &&
+        payload.status !== PRODUCT_STATUSES.PUBLISHED)
+    ) {
       await requirePermission(ADMIN_PERMISSIONS.PRODUCTS_PUBLISH);
     }
 

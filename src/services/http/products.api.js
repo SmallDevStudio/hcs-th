@@ -4,8 +4,35 @@ function unwrapApiData(response) {
   return response?.data ?? null;
 }
 
+function normalizePagination({ pagination, limit, itemCount }) {
+  const normalizedLimit = Number(pagination?.limit || limit);
+
+  const total = Number(pagination?.total);
+
+  if (!Number.isFinite(total) || total < 0) {
+    throw new Error(
+      "Product pagination total is missing. Update the Products API and product query service.",
+    );
+  }
+
+  const totalPages = Math.max(1, Math.ceil(total / normalizedLimit));
+
+  return {
+    limit: normalizedLimit,
+
+    count: Number(pagination?.count ?? itemCount),
+
+    total,
+    totalPages,
+
+    hasMore: pagination?.hasMore === true,
+
+    nextCursor: pagination?.nextCursor || null,
+  };
+}
+
 export async function getProducts({
-  limit = 25,
+  limit = 20,
   cursor,
   status,
   categoryId,
@@ -79,17 +106,19 @@ export async function getProducts({
     signal,
   });
 
+  const items = Array.isArray(response?.data) ? response.data : [];
+
   return {
-    items: Array.isArray(response.data) ? response.data : [],
+    items,
 
-    pagination: response.meta?.pagination || {
+    pagination: normalizePagination({
+      pagination: response?.meta?.pagination,
+
       limit,
-      count: 0,
-      hasMore: false,
-      nextCursor: null,
-    },
+      itemCount: items.length,
+    }),
 
-    filters: response.meta?.filters || null,
+    filters: response?.meta?.filters || null,
   };
 }
 
@@ -140,6 +169,21 @@ export async function reorderProducts({ items, signal }) {
     "/products/reorder",
     {
       items,
+    },
+    {
+      signal,
+    },
+  );
+
+  return unwrapApiData(response);
+}
+
+export async function bulkUpdateProducts({ action, productIds, signal }) {
+  const response = await apiClient.post(
+    "/products/bulk",
+    {
+      action,
+      productIds,
     },
     {
       signal,

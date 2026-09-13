@@ -6,7 +6,8 @@ import { useTranslation } from "react-i18next";
 import {
   FiArrowDown,
   FiArrowUp,
-  FiChevronDown,
+  FiChevronLeft,
+  FiChevronRight,
   FiEdit3,
   FiFilter,
   FiImage,
@@ -17,6 +18,8 @@ import {
   FiSave,
   FiSearch,
   FiTrash2,
+  FiUploadCloud,
+  FiXCircle,
 } from "react-icons/fi";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
@@ -24,10 +27,14 @@ import { toast } from "sonner";
 import { ProductFormModal } from "@/components/admin/products/ProductFormModal";
 import { PRODUCT_STATUSES, PRODUCT_STATUS_VALUES } from "@/constants/products";
 import {
+  bulkUpdateProducts,
   deleteProduct,
   getProducts,
   reorderProducts,
+  updateProduct,
 } from "@/services/http/products.api";
+
+const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 
 const INITIAL_FILTERS = {
   search: "",
@@ -158,6 +165,7 @@ export function ProductsClient({
   canCreate,
   canUpdate,
   canDelete,
+  canPublish,
 }) {
   const { t, i18n } = useTranslation("admin");
 
@@ -183,6 +191,18 @@ export function ProductsClient({
 
   const [savingOrder, setSavingOrder] = useState(false);
 
+  const [pageSize, setPageSize] = useState(initialPagination?.limit || 20);
+
+  const [pageNumber, setPageNumber] = useState(1);
+
+  const [pageCursors, setPageCursors] = useState([null]);
+
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  const [bulkProcessing, setBulkProcessing] = useState(false);
+
+  const [statusProcessingId, setStatusProcessingId] = useState(null);
+
   function updateDraftFilter(field, value) {
     setDraftFilters((currentFilters) => ({
       ...currentFilters,
@@ -190,12 +210,17 @@ export function ProductsClient({
     }));
   }
 
-  async function requestItems({ filters, cursor, append = false }) {
+  async function requestItems({
+    filters,
+    cursor,
+    limit = pageSize,
+    targetPage = 1,
+  }) {
     setLoading(true);
 
     try {
       const result = await getProducts({
-        limit: 25,
+        limit,
         cursor,
         search: filters.search || undefined,
         status: filters.status || undefined,
@@ -204,15 +229,12 @@ export function ProductsClient({
           filters.fireRated === "" ? undefined : filters.fireRated === "true",
       });
 
-      setItems((currentItems) =>
-        append ? [...currentItems, ...result.items] : result.items,
-      );
+      setItems(result.items);
 
       setPagination(result.pagination);
-
-      if (!append) {
-        setOrderDirty(false);
-      }
+      setPageNumber(targetPage);
+      setSelectedIds([]);
+      setOrderDirty(false);
     } catch (error) {
       toast.error(error?.message || t("products.messages.loadFailed"));
     } finally {
@@ -231,7 +253,11 @@ export function ProductsClient({
 
     await requestItems({
       filters: normalizedFilters,
+      cursor: undefined,
+      targetPage: 1,
     });
+
+    setPageCursors([null]);
   }
 
   async function handleClearFilters() {
@@ -241,24 +267,66 @@ export function ProductsClient({
 
     await requestItems({
       filters: INITIAL_FILTERS,
+      cursor: undefined,
+      targetPage: 1,
     });
+
+    setPageCursors([null]);
   }
 
   async function handleRefresh() {
     await requestItems({
       filters: appliedFilters,
+      cursor: pageCursors[pageNumber - 1] || undefined,
+      targetPage: pageNumber,
     });
   }
 
-  async function handleLoadMore() {
+  async function handleNextPage() {
     if (loading || !pagination?.nextCursor) {
       return;
     }
 
+    const nextPage = pageNumber + 1;
+
+    setPageCursors((currentCursors) => {
+      const nextCursors = currentCursors.slice(0, pageNumber);
+      nextCursors[nextPage - 1] = pagination.nextCursor;
+      return nextCursors;
+    });
+
     await requestItems({
       filters: appliedFilters,
       cursor: pagination.nextCursor,
-      append: true,
+      targetPage: nextPage,
+    });
+  }
+
+  async function handlePreviousPage() {
+    if (loading || pageNumber <= 1) {
+      return;
+    }
+
+    const previousPage = pageNumber - 1;
+
+    await requestItems({
+      filters: appliedFilters,
+      cursor: pageCursors[previousPage - 1] || undefined,
+      targetPage: previousPage,
+    });
+  }
+
+  async function handlePageSizeChange(event) {
+    const nextPageSize = Number(event.target.value);
+
+    setPageSize(nextPageSize);
+    setPageCursors([null]);
+
+    await requestItems({
+      filters: appliedFilters,
+      cursor: undefined,
+      limit: nextPageSize,
+      targetPage: 1,
     });
   }
 
@@ -303,17 +371,127 @@ export function ProductsClient({
     try {
       await deleteProduct(product.id);
 
-      setItems((currentItems) =>
-        currentItems.filter(
-          (currentProduct) => currentProduct.id !== product.id,
-        ),
-      );
+      await handleRefresh();
 
       toast.success(t("products.messages.deleteSuccess"));
     } catch (error) {
       toast.error(error?.message || t("products.messages.deleteFailed"));
     } finally {
       setProcessingId(null);
+    }
+  }
+
+  function toggleProductSelection(productId) {
+    setSelectedIds((currentIds) =>
+      currentIds.includes(productId)
+        ? currentIds.filter((currentId) => currentId !== productId)
+        : [...currentIds, productId],
+    );
+  }
+
+  function toggleCurrentPageSelection() {
+    const currentPageIds = items.map((product) => product.id);
+    const allSelected = currentPageIds.every((productId) =>
+      selectedIds.includes(productId),
+    );
+
+    setSelectedIds(allSelected ? [] : currentPageIds);
+  }
+
+  async function handleStatusChange(product, status) {
+    if (status === product.status) {
+      return;
+    }
+
+    setStatusProcessingId(product.id);
+
+    try {
+      await updateProduct({
+        productId: product.id,
+        values: { status },
+      });
+
+      await handleRefresh();
+
+      toast.success(t("products.messages.statusSuccess"));
+    } catch (error) {
+      toast.error(error?.message || t("products.messages.statusFailed"));
+    } finally {
+      setStatusProcessingId(null);
+    }
+  }
+
+  async function handleBulkAction(action) {
+    if (!selectedIds.length || bulkProcessing) {
+      return;
+    }
+
+    const destructive = action === "delete";
+
+    const confirmation = await Swal.fire({
+      title: t(`products.bulk.confirm.${action}.title`),
+      text: t(`products.bulk.confirm.${action}.text`, {
+        count: selectedIds.length,
+      }),
+      icon: destructive ? "warning" : "question",
+      showCancelButton: true,
+      confirmButtonText: t(`products.bulk.actions.${action}`),
+      cancelButtonText: t("products.actions.cancel"),
+      confirmButtonColor: destructive ? "#dc2626" : "#0979c4",
+      cancelButtonColor: "#64748b",
+      reverseButtons: true,
+      background: isDarkModeActive() ? "#071522" : "#ffffff",
+      color: isDarkModeActive() ? "#f8fafc" : "#0f172a",
+    });
+
+    if (!confirmation.isConfirmed) {
+      return;
+    }
+
+    setBulkProcessing(true);
+
+    try {
+      const result = await bulkUpdateProducts({
+        action,
+        productIds: selectedIds,
+      });
+
+      if (result.failedCount) {
+        toast.warning(
+          t("products.messages.bulkPartial", {
+            success: result.successCount,
+            failed: result.failedCount,
+          }),
+        );
+
+        console.table(result.failed);
+      } else {
+        toast.success(
+          t("products.messages.bulkSuccess", {
+            count: result.successCount,
+          }),
+        );
+      }
+
+      if (
+        action === "delete" &&
+        selectedIds.length === items.length &&
+        pageNumber > 1
+      ) {
+        const previousPage = pageNumber - 1;
+
+        await requestItems({
+          filters: appliedFilters,
+          cursor: pageCursors[previousPage - 1] || undefined,
+          targetPage: previousPage,
+        });
+      } else {
+        await handleRefresh();
+      }
+    } catch (error) {
+      toast.error(error?.message || t("products.messages.bulkFailed"));
+    } finally {
+      setBulkProcessing(false);
     }
   }
 
@@ -381,7 +559,16 @@ export function ProductsClient({
     Boolean(appliedFilters.categoryId) ||
     appliedFilters.fireRated !== "";
 
-  const canReorder = canUpdate && !hasFilters && !pagination?.hasMore;
+  const canReorder =
+    canUpdate && !hasFilters && Number(pagination?.total || 0) <= pageSize;
+
+  const allCurrentPageSelected =
+    items.length > 0 &&
+    items.every((product) => selectedIds.includes(product.id));
+
+  const rangeStart = items.length ? (pageNumber - 1) * pageSize + 1 : 0;
+
+  const rangeEnd = items.length ? rangeStart + items.length - 1 : 0;
 
   return (
     <div className="space-y-6">
@@ -572,13 +759,133 @@ export function ProductsClient({
         </div>
       </form>
 
+      <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-[#071522] sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-bold text-slate-800 dark:text-slate-100">
+            {t("products.results.summary", {
+              total: pagination?.total || 0,
+            })}
+          </p>
+
+          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+            {t("products.results.range", {
+              start: rangeStart,
+              end: rangeEnd,
+              total: pagination?.total || 0,
+            })}
+          </p>
+        </div>
+
+        <label className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300">
+          {t("products.pagination.perPage")}
+
+          <select
+            value={pageSize}
+            onChange={handlePageSizeChange}
+            disabled={loading || bulkProcessing}
+            className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-[#0979c4] dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+          >
+            {PAGE_SIZE_OPTIONS.map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      {selectedIds.length ? (
+        <div className="sticky top-3 z-20 flex flex-col gap-3 rounded-2xl border border-[#0979c4]/30 bg-sky-50 p-4 shadow-lg shadow-sky-950/5 dark:border-sky-800 dark:bg-sky-950/40 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-extrabold text-sky-900 dark:text-sky-100">
+              {t("products.bulk.selected", {
+                count: selectedIds.length,
+              })}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setSelectedIds([])}
+              disabled={bulkProcessing}
+              className="mt-1 text-xs font-bold text-sky-700 underline-offset-2 hover:underline dark:text-sky-300"
+            >
+              {t("products.bulk.clearSelection")}
+            </button>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {canPublish ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleBulkAction("publish")}
+                  disabled={bulkProcessing}
+                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-bold !text-white transition hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  <FiUploadCloud aria-hidden="true" />
+                  {t("products.bulk.actions.publish")}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleBulkAction("unpublish")}
+                  disabled={bulkProcessing}
+                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-amber-300 bg-white px-4 text-sm font-bold text-amber-700 transition hover:bg-amber-50 disabled:opacity-50 dark:border-amber-800 dark:bg-slate-900 dark:text-amber-300"
+                >
+                  <FiXCircle aria-hidden="true" />
+                  {t("products.bulk.actions.unpublish")}
+                </button>
+              </>
+            ) : null}
+
+            {canUpdate ? (
+              <button
+                type="button"
+                onClick={() => handleBulkAction("deactivate")}
+                disabled={bulkProcessing}
+                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+              >
+                <FiXCircle aria-hidden="true" />
+                {t("products.bulk.actions.deactivate")}
+              </button>
+            ) : null}
+
+            {canDelete ? (
+              <button
+                type="button"
+                onClick={() => handleBulkAction("delete")}
+                disabled={bulkProcessing}
+                className="inline-flex h-10 items-center gap-2 rounded-xl bg-red-600 px-4 text-sm font-bold !text-white transition hover:bg-red-700 disabled:opacity-50"
+              >
+                {bulkProcessing ? (
+                  <FiLoader className="animate-spin" aria-hidden="true" />
+                ) : (
+                  <FiTrash2 aria-hidden="true" />
+                )}
+                {t("products.bulk.actions.delete")}
+              </button>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-[#071522]">
         {items.length ? (
           <>
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[1180px]">
+              <table className="w-full min-w-[1230px]">
                 <thead className="bg-slate-50 dark:bg-slate-900">
                   <tr>
+                    <th className="w-12 px-4 py-3 text-left">
+                      <input
+                        type="checkbox"
+                        checked={allCurrentPageSelected}
+                        onChange={toggleCurrentPageSelection}
+                        aria-label={t("products.bulk.selectPage")}
+                        className="size-4 rounded border-slate-300 text-[#0979c4] accent-[#0979c4]"
+                      />
+                    </th>
+
                     {[
                       "product",
                       "model",
@@ -635,8 +942,25 @@ export function ProductsClient({
                     return (
                       <tr
                         key={product.id}
-                        className="transition hover:bg-slate-50 dark:hover:bg-slate-900/50"
+                        className={[
+                          "transition hover:bg-slate-50 dark:hover:bg-slate-900/50",
+                          selectedIds.includes(product.id)
+                            ? "bg-sky-50/70 dark:bg-sky-950/30"
+                            : "",
+                        ].join(" ")}
                       >
+                        <td className="px-4 py-4 align-top">
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.includes(product.id)}
+                            onChange={() => toggleProductSelection(product.id)}
+                            aria-label={t("products.bulk.selectProduct", {
+                              name: productName,
+                            })}
+                            className="mt-7 size-4 rounded border-slate-300 text-[#0979c4] accent-[#0979c4]"
+                          />
+                        </td>
+
                         <td className="px-4 py-4">
                           <div className="flex items-center gap-3">
                             <div className="relative flex size-[72px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-900">
@@ -702,14 +1026,72 @@ export function ProductsClient({
                         </td>
 
                         <td className="px-4 py-4">
-                          <span
-                            className={[
-                              "rounded-full px-2.5 py-1 text-xs font-bold",
-                              getStatusClassName(product.status),
-                            ].join(" ")}
-                          >
-                            {t(`products.statuses.${product.status}`)}
-                          </span>
+                          {canUpdate || canPublish ? (
+                            <div className="relative inline-flex items-center">
+                              <select
+                                value={product.status}
+                                onChange={(event) =>
+                                  handleStatusChange(
+                                    product,
+                                    event.target.value,
+                                  )
+                                }
+                                disabled={
+                                  statusProcessingId === product.id ||
+                                  bulkProcessing
+                                }
+                                aria-label={t("products.quickStatus", {
+                                  name: productName,
+                                })}
+                                className={[
+                                  "h-9 appearance-none rounded-full border-0 py-1 pl-3 pr-8 text-xs font-bold outline-none ring-1 ring-inset ring-current/10 disabled:opacity-50",
+                                  getStatusClassName(product.status),
+                                ].join(" ")}
+                              >
+                                {PRODUCT_STATUS_VALUES.map((status) => {
+                                  const requiresPublishPermission =
+                                    status === PRODUCT_STATUSES.PUBLISHED ||
+                                    product.status ===
+                                      PRODUCT_STATUSES.PUBLISHED;
+
+                                  return (
+                                    <option
+                                      key={status}
+                                      value={status}
+                                      disabled={
+                                        requiresPublishPermission
+                                          ? !canPublish
+                                          : !canUpdate
+                                      }
+                                    >
+                                      {t(`products.statuses.${status}`)}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+
+                              {statusProcessingId === product.id ? (
+                                <FiLoader
+                                  aria-hidden="true"
+                                  className="pointer-events-none absolute right-2.5 animate-spin"
+                                />
+                              ) : (
+                                <FiChevronRight
+                                  aria-hidden="true"
+                                  className="pointer-events-none absolute right-2.5 rotate-90"
+                                />
+                              )}
+                            </div>
+                          ) : (
+                            <span
+                              className={[
+                                "rounded-full px-2.5 py-1 text-xs font-bold",
+                                getStatusClassName(product.status),
+                              ].join(" ")}
+                            >
+                              {t(`products.statuses.${product.status}`)}
+                            </span>
+                          )}
                         </td>
 
                         <td className="px-4 py-4">
@@ -809,26 +1191,36 @@ export function ProductsClient({
               </table>
             </div>
 
-            {pagination?.hasMore ? (
-              <footer className="flex justify-center border-t border-slate-200 px-4 py-4 dark:border-slate-800">
+            <footer className="flex flex-col gap-3 border-t border-slate-200 px-4 py-4 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                {t("products.pagination.page", {
+                  page: pageNumber,
+                  totalPages: pagination?.totalPages || 1,
+                })}
+              </p>
+
+              <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={handleLoadMore}
-                  disabled={loading}
+                  onClick={handlePreviousPage}
+                  disabled={loading || pageNumber <= 1}
                   className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-bold text-slate-700 transition hover:border-[#0979c4]/40 hover:text-[#0979c4] disabled:opacity-50 dark:border-slate-700 dark:text-slate-200"
                 >
-                  {loading ? (
-                    <FiLoader className="animate-spin" aria-hidden="true" />
-                  ) : (
-                    <FiChevronDown aria-hidden="true" />
-                  )}
-
-                  {loading
-                    ? t("products.actions.loadingMore")
-                    : t("products.actions.loadMore")}
+                  <FiChevronLeft aria-hidden="true" />
+                  {t("products.pagination.previous")}
                 </button>
-              </footer>
-            ) : null}
+
+                <button
+                  type="button"
+                  onClick={handleNextPage}
+                  disabled={loading || !pagination?.hasMore}
+                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-bold text-slate-700 transition hover:border-[#0979c4]/40 hover:text-[#0979c4] disabled:opacity-50 dark:border-slate-700 dark:text-slate-200"
+                >
+                  {t("products.pagination.next")}
+                  <FiChevronRight aria-hidden="true" />
+                </button>
+              </div>
+            </footer>
           </>
         ) : (
           <div className="px-5 py-16 text-center">

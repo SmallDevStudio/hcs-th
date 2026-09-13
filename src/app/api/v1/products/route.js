@@ -39,7 +39,14 @@ export async function GET(request) {
 
     const filters = productQuerySchema.parse(queryValues);
 
-    const result = await getProducts(filters);
+    /*
+     * Admin Products ต้องใช้ยอดรวมสำหรับ
+     * result summary และ pagination
+     */
+    const result = await getProducts({
+      ...filters,
+      includeTotal: true,
+    });
 
     return apiSuccess({
       message: "Products retrieved successfully",

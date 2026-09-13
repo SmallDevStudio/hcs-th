@@ -235,6 +235,7 @@ export async function getProducts({
   showOnHome,
   fireRated,
   search,
+  includeTotal = false,
 }) {
   let query = adminDb
     .collection(COLLECTIONS.PRODUCTS)
@@ -290,6 +291,19 @@ export async function getProducts({
     query = query.where("searchTokens", "array-contains", searchToken);
   }
 
+  /*
+   * นับจำนวนจาก query หลังใช้ filter/search
+   * แต่ต้องนับก่อนใส่ cursor และ limit
+   * เพื่อให้ total เป็นจำนวนผลลัพธ์ทั้งหมดจริง
+   */
+  let total = null;
+
+  if (includeTotal) {
+    const countSnapshot = await query.count().get();
+
+    total = Number(countSnapshot.data()?.count || 0);
+  }
+
   query = query
     .orderBy("sortOrder", "asc")
     .orderBy(FieldPath.documentId(), "asc");
@@ -326,8 +340,15 @@ export async function getProducts({
 
     pagination: {
       limit,
+
       count: items.length,
+
+      total,
+
+      totalPages: total === null ? null : Math.max(1, Math.ceil(total / limit)),
+
       hasMore,
+
       nextCursor,
     },
   };
@@ -355,6 +376,8 @@ const getCachedHomeProducts = unstable_cache(
       fireRated: undefined,
 
       search: undefined,
+
+      includeTotal: false,
     });
 
     return result.items;
@@ -383,19 +406,26 @@ export async function getPublicProducts({
 }) {
   return getProducts({
     limit,
+
     cursor,
 
     status: PRODUCT_STATUSES.PUBLISHED,
 
     categoryId,
+
     productTypeSlug,
+
     standard,
+
     featured,
 
     showOnHome: undefined,
 
     fireRated,
+
     search,
+
+    includeTotal: false,
   });
 }
 
