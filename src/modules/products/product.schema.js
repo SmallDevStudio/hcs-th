@@ -462,3 +462,20 @@ export const reorderProductsSchema = z
     },
   );
 
+export const bulkProductActionSchema = z
+  .object({
+    action: z.enum(["publish", "unpublish", "deactivate", "delete"]),
+
+    productIds: z
+      .array(z.string().trim().min(1).max(128))
+      .min(1)
+      .max(PRODUCT_LIMITS.LIST_MAX_LIMIT),
+  })
+  .strict()
+  .refine(
+    (value) => new Set(value.productIds).size === value.productIds.length,
+    {
+      path: ["productIds"],
+      message: "Product IDs must be unique",
+    },
+  );
