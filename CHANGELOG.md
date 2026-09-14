@@ -12,23 +12,13 @@ The project follows a simplified form of Semantic Versioning:
 
 ### Added
 
-- Privacy Policy pages for English and Thai
-- Terms of Use pages for English and Thai
-- Legacy Privacy Policy URL redirect
-
 ### Changed
-
-- Updated project documentation for the current Public Website and CMS scope
 
 ### Fixed
 
-- Contact-form Privacy Policy URL compatibility
-
 ### Security
 
-- Added general privacy, retention, disclosure and data-subject-right information for company review
-
-## [0.1.0] - 2026-09-13
+## [1.0.0] - 2026-09-14
 
 ### Added
 
@@ -59,6 +49,11 @@ The project follows a simplified form of Semantic Versioning:
 - Open Graph metadata
 - Twitter metadata
 - Search-engine verification support
+- Added general privacy, retention, disclosure and data-subject-right information for company reviews
+- Contact-form Privacy Policy URL compatibility
+- Privacy Policy pages for English and Thai
+- Terms of Use pages for English and Thai
+- Legacy Privacy Policy URL redirect
 
 #### Administration
 
@@ -124,6 +119,7 @@ The project follows a simplified form of Semantic Versioning:
 - Permission-controlled permanent deletion
 - LINE account connection routes
 - Scheduled media-cleanup endpoint
+- Updated project documentation for the current Public Website and CMS scope
 
 #### Platform
 
